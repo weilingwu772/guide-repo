@@ -1,16 +1,40 @@
-# 解構機器人 The Robot Anatomy：從人類生理構造看智慧機器人的硬體分層
+# 解構機器人 The Robot Anatomy
 
 隨著具身智能（Embodied AI）爆發式成長，我們正在見證機器人從單一任務的「自動化機器」，演進為具備感知、思考、運動能力的「仿生實體」，當前市場主要有三種主流型態，分別是：
-1. **人型 (雙足)**：具備最高度的環境適應力（能上樓梯、跨越障礙），但控制算法最複雜且功耗較高。
-2. **狗型 (四足)**：在崎嶇地形（如山路、工廠管道區）表現極佳，穩定度高，是目前工業巡檢及戶外探勘的熱門選擇。
-3. **輪型**：移動速度最快、能效比最高，適合室內平坦地面，但無法克服梯級與高低落差，是目前技術與商業落地最成熟的型態。
+1. **人型 (雙足)**：環境適應力最強（能上樓梯、跨越障礙），但控制演算法門檻極高，且硬體功耗及成本目前仍居高不下。
+2. **狗型 (四足)**：在崎嶇地形（如戶外碎石地、工廠管道區）表現極佳，是目前工業巡檢及戶外探勘的熱門選擇。
+3. **輪型**：開發技術與商業落地最為成熟的型態，但其移動範圍深受地形條件限制（無法克服高低落差）。
 
-乍看之下，智慧機器人由成千上萬個零組件組成，結構相當複雜。然而，若從系統工程的角度分析，所有的零組件都可以歸納至三大核心模組：
-*   **感知（Perception - 機器人的感官）**：負責蒐集外部環境與自身狀態，包含 3D 深度相機、光學雷達（LiDAR）、慣性測量單元（IMU）以及關節力覺感測器。
-*   **運算（Compute - 機器人的大腦與小腦）**：負責演算推理與即時運動控制，包含邊緣運算主機（IPC）、AI 晶片（如 GPU/NPU）、即時控制器（MCU）以及通訊網路。
-*   **執行（Execution - 機器人的肌肉、骨骼與心臟）**：負責輸出動力與支撐結構，包含無框伺服馬達、精密減速機（如諧波減速機）、結構骨架與電池供電系統。
+這三種機器人皆是由上千或上萬個零組件所組成，結構相當複雜，但我們可從系統工程的角度，將所有零組件初步歸納成三大項目「感知」、「運算」與「執行」，相關界定內容與性能指標請參閱《Bot & Build：人機協作到共生的實踐指南》，而本文則依此為基礎走進開發世界。簡單來說，這三大零組件群是彼此分工、相互協作的關係，以此構成一個完整的閉環系統：首先透過感知零組件蒐集內外資訊；接著由運算平台（實務上常因應邊緣運算需求採分佈式架構）進行即時決策；最後透過執行機構完成動作，並透過感知回饋數據形成閉迴路調整。
 
-這三大模組彼此分工、相互協作，構成一個完整的閉環系統：首先透過感知零組件蒐集資訊；接著由運算平台進行決策；最後透過執行機構完成動作，並持續透過感知回饋調整，形成閉迴路控制。
+```mermaid
+graph LR
+    subgraph Robot[" "]
+    Sensory["👀 感知 Perception"]:::sensory
+    Compute["🧠 運算 Cognition"]:::brain
+    Execution["💪 執行 Execution"]:::muscle
+    end
+
+    Env["🌍 外部物理環境 Environment"]:::env
+
+    %% 內部控制流
+    Sensory -->|感知數據 Sensor Data| Compute
+    Compute -->|控制指令 Control Command| Execution
+    Execution -. 動態回饋 State Feedback .-> Sensory
+
+    %% 與外部環境互動
+    Sensory -->|發射探測訊號 Probe Signal| Env
+    Env -->|接收反射訊號/回傳訊號 Reflected Signal/Return Signal| Sensory
+    Execution -->|物理作用 Physical Action| Env
+
+    %% 樣式
+    classDef default fill:#1e1e2e,stroke:#cdd6f4,stroke-width:2px,color:#cdd6f4;
+    classDef sensory fill:#f38ba8,stroke:#f38ba8,stroke-width:2px,color:#11111b;
+    classDef brain fill:#f9e2af,stroke:#f9e2af,stroke-width:2px,color:#11111b;
+    classDef muscle fill:#a6e3a1,stroke:#a6e3a1,stroke-width:2px,color:#11111b;
+    classDef env fill:#89b4fa,stroke:#89b4fa,stroke-width:2px,color:#11111b;
+```
+
 
 作為系列文章的第一篇，我們將以此三大核心模組為基石，並以人類的生理構造為隱喻，進一步解構現代智慧機器人的硬體架構，梳理出從大腦到肌肉的完整六大分層，盤點國際主流大廠與台灣關鍵供應鏈名單，最後聚焦於讓機器人能看、能聽、能觸摸的「感知」智慧硬體。
 

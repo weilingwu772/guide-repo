@@ -1,28 +1,20 @@
-# ROS2 硬體開發與學習指南 (roshelp)
+# ROS2 硬體開發與學習指南 (guide-repo)
 
 歡迎來到 **ROS2 硬體開發指南** 儲存庫。本專案旨在提供將物理硬體組件與 ROS2 (Robot Operating System 2) 生態系統整合的全面知識庫，涵蓋從高階架構框架到低階通訊協定的圖解指南。
 
 ---
 
-## 🛠️ 文件導覽與建議閱讀順序
+## 🛠️ 文件導覽
 
-您可以根據以下順序學習如何橋接軟體演算法與物理硬體：
+您可以由此開始學習機器人系統的軟硬體整合：
 
-```mermaid
-graph LR
-    A["ROS2 入門指南"] --> B["硬體整合框架"]
-    B --> C["硬體底層通訊"]
-    B --> D["ROS Bridge 圖解"]
-```
-
-### 文件列表詳解
+### 文件列表
 
 | 文件 | 說明 |
 | :--- | :--- |
-| [1. ROS2 入門與核心概念](ROS_Introduction.md) | 專為新手準備的基礎指南，涵蓋節點、主題、服務、動作及 DDS 中介軟體。 |
-| [2. 硬體整合框架 (Framework)](ROS_Hardware_Integration_Framework.md) | 學習「大腦與軀幹」的比喻，以及模組化、具備擴充性的三層架構。 |
-| [3. 底層硬體通訊 (Communication)](ROS2_Hardware_Communication.md) | 深入研究常用協定（UART, I2C, CAN, SPI, Ethernet）與 ROS2 節點的整合。 |
-| [4. ROS Bridge 圖解 (Bridge)](ROS_Bridge_Guide.md) | 透過 WebSocket 讓非 ROS 系統（如網頁、行動裝置）與 ROS2 溝通。 |
+| [1. 解構機器人 (The Robot Anatomy)](CH1-1_The_Robot_Anatomy.md) | 從系統工程角度，將機器人組件歸納為感知、運算與執行三大項目的基礎指南。 |
+| [2. 為什麼在機器人開發中使用 ROS 2 (Why use ROS 2)](CH1-2_Why_use_ROS_2_for_robot_development.md) | 介紹在現代機器人開發中選擇 ROS 2 的核心原因。 |
+| [3. 感測器融合的 ROS 2 工程標準 (Engineering Standards)](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | 介紹感測器融合在 ROS 2 中的工程標準與實作規範。 |
 
 ---
 

@@ -76,18 +76,18 @@ graph LR
 ## 【感知】機器人的視線範圍
 
 - **國際主流廠**：
-  - **RGB相機**：Keyence(:jp:)、Cognex(:us:)
-  - **深度相機**：Intel RealSense(:us:)、Orbbec(:cn:)、Stereolabs(:us:/:fr:)
-  - **3D光達（LiDAR）**：SICK(:de:)、Hesai(:cn:)、Robosense(:cn:)
-  - **超音波/紅外線**：FLIR System(:us:)、Raytron(:cn:)
-  - **雷達(RADAR)/毫米波**：Bosch(:de:)、Continental(:de:)、Valeo(:fr:)
-  - **電容式MEMS**：Goertek(:cn:)、Knowles(:us:)、AAC Technologies(:cn:)、Infineon Technologies(:de:)
-  - **壓力感測（電子皮膚）**：Tekscan(:us:)、SynTouch(:us:)、Novasentis(:us:)、Hanwei Electronics(:cn:)、JDI(:jp:)
-  - **一維力感測**：Sensata(:us:)、Futek(:us:)
-  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(:us:)、Sunrise Instruments(:cn:)
-  - **GNSS／RTK**：u-blox(:switzerland:)、Trimble(:us:)
-  - **慣性測量單元 (IMU)** ：ADI(:us:)、Bosch(:de:)
-  - **編碼器（Encoder）**：Renishaw(:gb:)、Celera Motion(:us:)
+  - **RGB相機**：Keyence(日/JP)、Cognex(美/US)
+  - **深度相機**：Intel RealSense(美/US)、Orbbec(中/CN)、Stereolabs(美/US, 法/FR)
+  - **3D光達（LiDAR）**：SICK(德/DE)、Hesai(中/CN)、Robosense(中/CN)
+  - **超音波/紅外線**：FLIR System(美/US)、Raytron(中/CN)
+  - **雷達(RADAR)/毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
+  - **電容式MEMS**：Goertek(中/CN)、Knowles(美/US)、AAC Technologies(中/CN)、Infineon Technologies(德/DE)
+  - **壓力感測（電子皮膚）**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、Hanwei Electronics(中/CN)、JDI(日/JP)
+  - **一維力感測**：Sensata(美/US)、Futek(美/US)
+  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(美/US)、Sunrise Instruments(中/CN)
+  - **GNSS／RTK**：u-blox(瑞/CH)、Trimble(美/US)
+  - **慣性測量單元 (IMU)** ：ADI(美/US)、Bosch(德/DE)
+  - **編碼器（Encoder）**：Renishaw(英/UK)、Celera Motion(美/US)
 - **台灣供應商**：
 
 在具身智能時代，
@@ -97,8 +97,8 @@ graph LR
 ## 【運算】機器人的聰明程度
 
 - **國際主流廠**：
-  - **邊緣運算平台**：NVIDIA(:us:)、Intel(:us:)、Qualcomm(:us:)、AMD(:us:)、Siemens(:de:)、Beckhoff(:de:)
-  - **控制器**：STMicroelectronics(:switzerland:)、Texas Instruments(:us:)、Infineon Technologies(:de:)、NXP(:netherlands:)、Microchip(:us:)
+  - **邊緣運算平台**：NVIDIA(美/US)、Intel(美/US)、Qualcomm(美/US)、AMD(美/US)、Siemens(德/DE)、Beckhoff(德/DE)
+  - **控制器**：STMicroelectronics(瑞/CH)、Texas Instruments(美/US)、Infineon Technologies(德/DE)、NXP(荷/NL)、Microchip(美/US)
 - **台灣供應商**：
 
 
@@ -129,9 +129,9 @@ graph LR
 執行系統是機器人的骨骼與肌肉，動力系統則是心臟，兩者協同完成物理世界的交互。
 
   - **無框力矩馬達**：
-  - **空心杯馬達**：Faulhaber(:switzerland:)、Maxon(:switzerland:)
-  - **行星滾珠螺桿**：BKL Automation(:de:)、KS Tools(:de:)
-  - **末端執行器**：SICK、Cognex(:us:)
+  - **空心杯馬達**：Faulhaber(瑞/CH)、Maxon(瑞/CH)
+  - **行星滾珠螺桿**：BKL Automation(德/DE)、KS Tools(德/DE)
+  - **末端執行器**：SICK、Cognex(美/US)
 
 ### 4.1 精密減速器：骨骼關節的變速箱
 - **行星減速器**：抗衝擊能力強，適合人形下肢與機器狗，但精度較低。

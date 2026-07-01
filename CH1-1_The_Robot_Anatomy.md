@@ -76,18 +76,18 @@ graph LR
 ## 【感知】機器人的視線範圍
 
 - **國際主流廠**：
-  - **RGB相機**：Keyence(日)、Cognex(美)
-  - **深度相機**：Intel RealSense(美)、Orbbec(中)、Stereolabs(美/法)
-  - **3D光達（LiDAR）**：SICK(德)、Hesai(中)、Robosense(中)
-  - **超音波/紅外線**：FLIR System(美)、Raytron(中)
-  - **雷達(RADAR)/毫米波**：Bosch(德)、Continental(德)、Valeo(法)
-  - **電容式MEMS**：Goertek(中)、Knowles(美)、AAC Technologies(中)、Infineon Technologies(德)
-  - **壓力感測（電子皮膚）**：Tekscan(美)、SynTouch(美)、Novasentis(美)、Hanwei Electronics(中)、JDI(日)
-  - **一維力感測**：Sensata(美)、Futek(美)
-  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(美)、Sunrise Instruments(中)
-  - **GNSS／RTK**：u-blox(瑞)、Trimble(美)
-  - **慣性測量單元 (IMU)** ：ADI(美)、Bosch(德)
-  - **編碼器（Encoder）**：Renishaw(英)、Celera Motion(美)
+  - **RGB相機**：Keyence(🇯🇵)、Cognex(🇺🇸)
+  - **深度相機**：Intel RealSense(🇺🇸)、Orbbec(🇨🇳)、Stereolabs(🇺🇸/🇫🇷)
+  - **3D光達（LiDAR）**：SICK(🇩🇪)、Hesai(🇨🇳)、Robosense(🇨🇳)
+  - **超音波/紅外線**：FLIR System(🇺🇸)、Raytron(🇨🇳)
+  - **雷達(RADAR)/毫米波**：Bosch(🇩🇪)、Continental(🇩🇪)、Valeo(🇫🇷)
+  - **電容式MEMS**：Goertek(🇨🇳)、Knowles(🇺🇸)、AAC Technologies(🇨🇳)、Infineon Technologies(🇩🇪)
+  - **壓力感測（電子皮膚）**：Tekscan(🇺🇸)、SynTouch(🇺🇸)、Novasentis(🇺🇸)、Hanwei Electronics(🇨🇳)、JDI(🇯🇵)
+  - **一維力感測**：Sensata(🇺🇸)、Futek(🇺🇸)
+  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(🇺🇸)、Sunrise Instruments(🇨🇳)
+  - **GNSS／RTK**：u-blox(🇨🇭)、Trimble(🇺🇸)
+  - **慣性測量單元 (IMU)** ：ADI(🇺🇸)、Bosch(🇩🇪)
+  - **編碼器（Encoder）**：Renishaw(🇬🇧)、Celera Motion(🇺🇸)
 - **台灣供應商**：
 
 在具身智能時代，
@@ -97,8 +97,8 @@ graph LR
 ## 【運算】機器人的聰明程度
 
 - **國際主流廠**：
-  - **邊緣運算平台**：NVIDIA(美)、Intel(美)、Qualcomm(美)、AMD(美)、Siemens(德)、Beckhoff(德)
-  - **控制器**：STMicroelectronics(瑞)、Texas Instruments(美)、Infineon Technologies(德)、NXP(荷)、Microchip(美)
+  - **邊緣運算平台**：NVIDIA(🇺🇸)、Intel(🇺🇸)、Qualcomm(🇺🇸)、AMD(🇺🇸)、Siemens(🇩🇪)、Beckhoff(🇩🇪)
+  - **控制器**：STMicroelectronics(🇨🇭)、Texas Instruments(🇺🇸)、Infineon Technologies(🇩🇪)、NXP(🇳🇱)、Microchip(🇺🇸)
 - **台灣供應商**：
 
 

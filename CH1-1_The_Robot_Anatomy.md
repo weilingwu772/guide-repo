@@ -73,65 +73,89 @@ graph LR
 
 ---
 
+講選用台廠的優勢？
+
 ## 【感知】機器人的視線範圍
 
 - **國際主流廠**：
   - **RGB相機**：Keyence(日/JP)、Cognex(美/US)
-  - **深度相機**：Intel RealSense(美/US)、Orbbec(中/CN)、Stereolabs(美/US, 法/FR)
-  - **3D光達（LiDAR）**：SICK(德/DE)、Hesai(中/CN)、Robosense(中/CN)
-  - **超音波/紅外線**：FLIR System(美/US)、Raytron(中/CN)
+  - **深度相機**：Intel RealSense(美/US)、奧比中光(中/CN)、Stereolabs(美/US, 法/FR)
+  - **3D光達（LiDAR）**：SICK(德/DE)、禾賽科技(中/CN)、速騰聚創(中/CN)
+  - **超音波/紅外線**：FLIR System(美/US)、睿創微納(中/CN)
   - **雷達(RADAR)/毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
-  - **電容式MEMS**：Goertek(中/CN)、Knowles(美/US)、AAC Technologies(中/CN)、Infineon Technologies(德/DE)
-  - **壓力感測（電子皮膚）**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、Hanwei Electronics(中/CN)、JDI(日/JP)
+  - **電容式MEMS**：歌爾股份(中/CN)、Knowles(美/US)、瑞聲科技(中/CN)、Infineon Technologies(德/DE)
+  - **壓力感測（電子皮膚）**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)
   - **一維力感測**：Sensata(美/US)、Futek(美/US)
-  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(美/US)、Sunrise Instruments(中/CN)
+  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
   - **GNSS／RTK**：u-blox(瑞/CH)、Trimble(美/US)
   - **慣性測量單元 (IMU)** ：ADI(美/US)、Bosch(德/DE)
   - **編碼器（Encoder）**：Renishaw(英/UK)、Celera Motion(美/US)
+
 - **台灣供應商**：
 
-在具身智能時代，
+- **未來關鍵**：在具身智能時代，強調人工智慧系統必須依託「身體」進行運作，無論該身體是實體智慧機器人或虛擬代理，皆須與物理環境進行交互動作，然而真實世界的環境充滿變化，也因此凸顯出，感知是技術演進上最為關鍵的挑戰，尤其是深度感測與3D定位，對感知資料的解析度（Resolution）與精度（Accuracy）要求就越高，當前產業仍面臨多感測器融合、弱光/強光辨識、戶外惡劣天氣與低成本化等挑戰；同時，如何有效且精準處理資料標記（tokens）的工作，也是
 
 ---
 
 ## 【運算】機器人的聰明程度
 
 - **國際主流廠**：
-  - **邊緣運算平台**：NVIDIA(美/US)、Intel(美/US)、Qualcomm(美/US)、AMD(美/US)、Siemens(德/DE)、Beckhoff(德/DE)
-  - **控制器**：STMicroelectronics(瑞/CH)、Texas Instruments(美/US)、Infineon Technologies(德/DE)、NXP(荷/NL)、Microchip(美/US)
+  - **邊緣運算平台**：NVIDIA (美/US)、Intel (美/US)、Qualcomm (美/US)、AMD (美/US)、Siemens (德/DE)、Beckhoff (德/DE)
+  - **控制器**：STMicroelectronics (瑞/CH)、Texas Instruments (美/US)、Infineon Technologies (德/DE)、NXP (荷/NL)、Microchip (美/US)
+
 - **台灣供應商**：
 
-值得注意的是，在具身智能時代，運算架構已從單純的「控制器-邊緣運算平台」演進為「控制器-邊緣運算平台-高效能運算HPC」的三層協作體系：
-後台 HPC 與雲端運算平台（如 GPU 訓練叢集、並行物理模擬伺服器）屬於具身智能研發的「後台基礎設施」，受限於功耗與重量無法直接裝載於機器人本體
+- **未來關鍵**：為了在算力需求與物理極限之間取得平衡，運算架構正逐漸從「控制器 - 邊緣運算平台」演進為「控制器 - 邊緣運算平台 - 高效能運算 (HPC)」三層協作體系。這源於智慧機器人（尤其是人形機器人與機器狗）對本體空間、重量配比、功耗與散熱等面向的極度要求，難以單靠機載邊緣運算平台運行參數龐大的AI模型與訓練技術——例如強化學習 (Reinforcement Learning，簡稱 RL)、視覺-語言-動作 (Vision-Language-Action，簡稱 VLA) 或世界模型 (World Model)；因此，獨立將大模型訓練與模擬 (Sim-to-Real) 交給HPC層處理，才能讓本體專注於即時控制，又同時滿足機器人訓練上的AI運算需求。
 
-受限於體積、重量與功耗（SWaP），HPC 叢集無法直接裝載於機器人本體，但作為具身智能研發的「後方大腦」，主要負責：
-  - **大規模物理模擬 (Massive Sim-to-Real)**：如利用 NVIDIA Isaac Gym 在數千個並行虛擬環境中，高速訓練機器人的運動與操作策略。
-  - **具身大模型訓練**：進行視覺-語言-動作模型 (VLA) 的離線預訓練與微調。
-  - **非即時高階決策**：雲端大腦負責長序列任務拆解（Task Planning）與場景語意理解。
+```mermaid
+graph TD
+    %% 樣式定義
+    classDef old fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef newHpc fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px;
+    classDef newEdge fill:#fbe9e7,stroke:#d84315,stroke-width:2px;
+    classDef newCtrl fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef onboard fill:#fafafa,stroke:#757575,stroke-width:1.5px,stroke-dasharray: 4 4;
 
-| 發展世代 | 核心演算法技術 | 機器人解決問題 | HPC 叢集的核心角色 |
-| :--- | :--- | :--- | :--- |
-| **第一代** | **強化學習 (Reinforcement Learning)** | 學會「如何移動」<br>（如：平衡、步態、關節力矩控制） | **大規模並行物理模擬 (Sim-to-Real)**：在 GPU 叢集上運行數千個並行模擬器（如 Isaac Gym），讓機器人在數小時內完成實體需花費數萬小時的行走與跌倒訓練。 |
-| **第二代** | **視覺-語言-動作模型 (VLA)** | 學會「如何完成任務」<br>（如：語意理解、物件操作） | **多模態對齊預訓練**：訓練數十億至數百億參數的 VLA 骨幹網路，處理並學習海量「感知圖像 - 語言指令 - 動作軌跡」的對齊資料。 |
-| **第三代** *(發展中)* | **世界模型 (World Model) +<br>分層/擴散策略 (Hierarchical/Diffusion Policy)** | 學會「如何思考與規劃」<br>（如：虛擬物理預測、軌跡生成） | **生成式物理預測與擴散計算**：訓練世界模型在虛擬空間中預測未來物理畫面（運算量大），並執行高維度動作空間的去噪擴散軌跡學習。 |
+    %% 傳統運算架構
+    subgraph Traditional ["傳統運算架構 (全機載)"]
+        A1["邊緣運算平台"]
+        A2["控制器"]
+        A1 -->|"指令"| A2
+    end
+    class Traditional,A1,A2 old;
+
+    %% 具身智能時代下的運算架構
+    subgraph Embodied ["具身智能時代下的運算架構"]
+        %% 機載外
+        B1["高效能運算<br>(地端、雲端或資料中心)"]
+        
+        %% 機載內
+        subgraph Onboard ["機器人本體(機載內)"]
+            B2["邊緣運算平台"]
+            B3["控制器"]
+            B2 -->|"指令"| B3
+        end
+        class Onboard onboard;
+        
+        B1 -->|"量化後模型"| B2
+    end
+    class B1 newHpc;
+    class B2 newEdge;
+    class B3 newCtrl;
+    Traditional -.->|"演進"| Embodied
+```
 
 ---
 
 ## 【執行】機器人的靈敏程度
 
-執行系統是機器人的骨骼與肌肉，動力系統則是心臟，兩者協同完成物理世界的交互。
+- **國際主流廠**：
+  - **減速機**：Harmonic Drive Systems(日/JP)、綠的諧波(中/CN)、Ｎidec Shimpo(日/JP)、Nabtesco(日/JP)、雙環傳動(中/CN)、Wittenstein(德/DE)、Neugart(德/DE)
+  - **馬達**：Kollmorgen(美/US)、BEI Kimco(美/US)、Maxon(瑞/CH)、
+  Nidec(日/JP)、YASKAWA(日/JP)、DYNAMIXEL(韓/KR)
+  - **滾珠螺桿**：NSK(日/JP)、THK(日/JP)、Schaeffler(德/DE)
+  - **末端執行器**：靈心巧手(中/CN)、Festo(德/DE)、SCHUNK(德/DE)、因時機器人(中/CN)
+  
+- **台灣供應商**：
 
-  - **無框力矩馬達**：
-  - **空心杯馬達**：Faulhaber(瑞/CH)、Maxon(瑞/CH)
-  - **行星滾珠螺桿**：BKL Automation(德/DE)、KS Tools(德/DE)
-  - **末端執行器**：SICK、Cognex(美/US)
-
-### 4.1 精密減速器：骨骼關節的變速箱
-- **行星減速器**：抗衝擊能力強，適合人形下肢與機器狗，但精度較低。
-- **諧波減速器 (HD)**：體積極小、精度極高，是人形上身關節與機器狗的部分關節首選。
-- **擺線減速器 (RV)**：承載大、剛性高，常用於人形肩膀等重載部位。
-
-### 4.2 關節馬達：肌肉動力源
-- **無框力矩馬達**：扭矩密度極高且體積小，能直接整合進狹小的防生關節中，是人形與機器狗關節的靈魂。
-- **空心杯馬達**：低慣量、轉子響應速度極快且運行精準，是人形靈巧手手指運作的唯一標配。
-- **行星滾柱螺桿**：將馬達旋轉轉為強大的直線推力，常用於人形的線性腿部執行器或腰部。
+- **未來關鍵**：將由「單項選配」走向「模組整合」，過往整機開發者需分別選擇馬達、減速器、驅動器、編碼器，不僅要考量各零組件間的適配性，還要花時間進行系統整合與控制調校，因此，為縮短開發時程和降低整合風險，而逐漸傾向直接採用一體式(All-in-One)產品；這股需求端的趨勢，促使供給端往模組化的整合型設計方向前進，加上智慧機器人領域對於執行類零組件的需求逐漸增加，目前已出現如 QDD 關節模組（Quasi-Direct Drive 準直驅；大扭矩馬達+低減速比減速機），以及結合電子皮膚的靈巧手模組等產品。

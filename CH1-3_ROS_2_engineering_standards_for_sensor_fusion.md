@@ -4,16 +4,16 @@
 
 ---
 
-## 一、 第一面向：ROS Enhancement Proposal (REP) 開發規範
+## ROS Enhancement Proposal (REP) 開發規範
 
-我們將按照實際的硬體與軟體開發順序（確認開發平台版本 $\rightarrow$ 挑設備看規格 $\rightarrow$ 依應用需求寫設定值）來解析核心的 REP 標準，並歸納出與感知系統密切相關的規範。
+本文依照實際開發機器人時的順序（確認開發平台版本 $\rightarrow$ 挑設備看規格 $\rightarrow$ 依應用需求寫設定值），來介紹核心的 REP 標準，並整理出與機器人感知系統較為相關的內容，幫助讀者更容易理解與實際應用。
 
 ### 1. 確認開發平台版本：REP-2000 (ROS 2 Releases)
-- **開發順序的第一步**是確認專案所採用的 ROS 2 發行版及其支援的基礎作業系統與編譯器版本。
-- **REP-2000** 定義了各個 ROS 2 版本的生命週期與軟硬體平台依賴：
-  - **Humble Hawksbill (LTS)**：對應 Ubuntu 22.04 LTS，預設編譯器為 GCC 11.2 (支援 C++17)。
-  - **Jazzy Jalisco (LTS)**：對應 Ubuntu 24.04 LTS，預設支援 C++20。
-- **工程參考**：撰寫 C++ 融合演算法或自訂感測器驅動時，必須確保你的 `CMakeLists.txt` 中指定的 C++ 標準（例如 `set(CMAKE_CXX_STANDARD 17)`）與 REP-2000 規定的目標發行版完全一致，避免編譯期或執行期的 ABI 相容性問題。
+開發的第一步是先決定專案要使用的 ROS 2 發行版（Distribution），因為不同發行版所支援的作業系統、程式語言版本及開發工具皆有所不同。REP-2000 即定義了各個 ROS 2 發行版的支援平台、生命週期（EOL）及目標開發環境。
+常見的 LTS 發行版包括：
+Humble Hawksbill：支援至 2027 年 5 月，主要目標平台為 Ubuntu 22.04 LTS (Jammy)。
+Jazzy Jalisco：支援至 2029 年 5 月，主要目標平台為 Ubuntu 24.04 LTS (Noble)。
+工程實務建議：在開發 C++ 節點、感測器驅動或演算法時，應配合所選 ROS 2 發行版所對應的編譯器與 C++ 標準，例如 Humble 通常採用 Ubuntu 22.04 的 GCC 11 與 C++17，而 Jazzy 則配合 Ubuntu 24.04 的 GCC 13 與 C++20。因此，CMakeLists.txt 中的 CMAKE_CXX_STANDARD 應與目標發行版保持一致，以降低編譯錯誤及 ABI 相容性問題，並確保能與 ROS 2 官方套件正常整合。
 
 ### 2. 挑設備看規格（資料格式）：REP-117 與 REP-118
 當你挑選光達或相機時，除了硬體物理指標，還必須確保軟體層面輸出的 Topic 資料格式符合 ROS 2 官方標準。
@@ -56,7 +56,7 @@
 
 ---
 
-## 二、 第二面向：從國際主流產品 ROS package 彙整 Node 類別 (從 Launch 回推)
+## 2. 從國際主流產品 ROS package 彙整 Node 類別 (從 Launch 回推)
 
 為了解國際大廠如何將硬體接入 ROS 2 體系，我們可以從各家官方的 Launch 檔宣告回推，歸納出它們的 Node 類別架構設計。以下彙整了 Intel RealSense、RPLIDAR 以及 Velodyne 等主流產品的工程實踐。
 

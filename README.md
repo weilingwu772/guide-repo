@@ -8,9 +8,9 @@
 
 | 章節  | 目前版本 | 最新更新 | 進度狀態 |
 | --- | ---- | ---- | ---- |
-| [1. 解構機器人 (The Robot Anatomy)](CH1-1_The_Robot_Anatomy.md) | v1 | 7/9  | 待review |
-| [2. 為什麼在機器人開發中使用 ROS 2 (Why use ROS 2 for robot development)](CH1-2_Why_use_ROS_2_for_robot_development.md) | v1 | 7/8  | 待review |
-| [3. 多感測器融合的 ROS 2 工程規範 (ROS 2 engineering standards for sensor fusion)](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | v1 | 7/9  | 待review |
+| [1. 解構機器人](CH1-1_The_Robot_Anatomy.md) | v1 | 7/9  | 待review |
+| [2. 為什麼在機器人開發中使用 ROS 2](CH1-2_Why_use_ROS_2_for_robot_development.md) | v1 | 7/8  | 待review |
+| [3. 多感測器融合的 ROS 2 工程規範](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | v1 | 7/9  | 待review |
 
 ---
 

@@ -77,9 +77,9 @@ graph LR
 
 - **國際主流廠**：
   - **RGB相機**：Keyence(日/JP)、Cognex(美/US)
-  - **深度相機**：Intel RealSense(美/US)、奧比中光(中/CN)、Stereolabs(美/US, 法/FR)
+  - **深度相機**：Intel RealSense(美/US)、奧比中光(中/CN)、Stereolabs(美/US)
   - **3D光達（LiDAR）**：SICK(德/DE)、禾賽科技(中/CN)、速騰聚創(中/CN)
-  - **超音波/紅外線**：FLIR System(美/US)、睿創微納(中/CN)
+  - **超音波/紅外線**：Teledyne FLIR(美/US)、睿創微納(中/CN)
   - **雷達(RADAR)/毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
   - **電容式MEMS**：歌爾股份(中/CN)、Knowles(美/US)、瑞聲科技(中/CN)、Infineon Technologies(德/DE)
   - **壓力感測（電子皮膚）**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)

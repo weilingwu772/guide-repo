@@ -1,6 +1,6 @@
 # 感測器融合的 ROS 2 工程標準 (ROS 2 engineering standards for sensor fusion)
 
-在機器人開發中，**工程標準**是確保系統穩定與不同演算法（如 Nav2、Cartographer、robot_localization）順利串接的關鍵。本章將從 **REP d開發規範**與**國際主流設備節點設計**兩個面向，為開發人員提供寫程式時的具體參考。
+在機器人開發中，**工程標準**是確保系統穩定與不同演算法（如 Nav2、Cartographer、robot_localization）順利串接的關鍵。本章將從 **REP 開發規範**與**國際主流設備節點設計**兩個面向，為開發人員提供寫程式時的具體參考。
 
 ---
 
@@ -30,7 +30,7 @@
 
 * **REP-117 Informational Distance Measurements**
 
-    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種範例，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
     
     舉例來說，傳統開發可能出現 `0.0`、`-1.0`、`minimum_range`、`maximum_range` 或其他自訂數值，來表示超出量測範圍或量測異常，資料語意的不同，容易導致演算法搞錯意思，造成機器人緊急煞車或路徑規劃出錯。REP-117 建議遵循以下形式：
     
@@ -104,9 +104,9 @@
 
 ---
 
-## 2. 從國際主流產品 ROS package 彙整 Node 類別 (從 Launch 回推)
+## 2. 從國際主流產品 ROS package 彙整 Node 類別
 
-為了解國際大廠如何將硬體接入 ROS 2 體系，我們可以從各家官方的 Launch 檔宣告回推，歸納出它們的 Node 類別架構設計。以下彙整了 Intel RealSense、RPLIDAR 以及 Velodyne 等主流產品的工程實踐。
+為了解國際大廠如何將硬體接入 ROS 2 體系，我們可以從各家官方的 Launch 檔宣告回推，歸納出它們的 Node 類別架構設計。以下彙整了 Intel RealSense、RPLIDAR 等主流產品的工程實踐。
 
 ### 1. 典型主流產品的 Node 宣告回推
 
@@ -131,9 +131,8 @@
   ```
 - **Node 類別歸納**：
   - **`Driver Node` (硬體驅動/數據提供者)**：主要發布 `sensor_msgs/msg/Image` (RGB & Depth)、`sensor_msgs/msg/PointCloud2` 與 `sensor_msgs/msg/Imu`。
-  - **設計特色**：採用 ROS 2 的 **Component / Lifecycle** 架構。驅動節點繼承自 `rclcpp::Node` 或 `rclcpp_lifecycle::LifecycleNode`，將相機硬體的初始化與 ROS 通訊生命週期解耦。
 
-#### 案例 B：RPLIDAR (Slamtec) — 2D 固態/旋轉光達
+#### 案例 B：RPLIDAR (Slamtec) — 2D 機械旋轉式光達
 - **官方 Package**：`rplidar_ros`
 - **Launch 檔宣告回推**：
   ```python
@@ -159,68 +158,34 @@
 #### 案例 C：Velodyne (3D 光達) — 多線式 3D 光達
 - **官方 Package**：`velodyne_driver` 與 `velodyne_pointcloud`
 - **Launch 檔宣告回推**：
-  在 Launch 檔中，Velodyne 採用了**管線化 (Pipeline) / 組件化 (Composable Nodes)** 設計：
-  ```python
-  from launch_ros.actions import ComposableNodeContainer
-  from launch_ros.descriptions import ComposableNode
+  在 Launch 檔中，Velodyne 採用了**管線化 (Pipeline) / 組件化節點 (Composable Nodes / Components)** 設計，將不同的功能模組動態加載至同一個容器中：
+  ```Python
+from launch_ros.actions import ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
 
-  container = ComposableNodeContainer(
-      name='velodyne_container',
-      namespace='',
-      package='rclcpp_components',
-      executable='component_container',
-      composable_node_descriptions=[
-          # 節點 1: 負責接收 UDP 原始封包 (Raw Packets)
-          ComposableNode(
-              package='velodyne_driver',
-              plugin='velodyne_driver::VelodyneDriver',
-              name='velodyne_driver_node',
-              parameters=[{'device_ip': '192.168.1.201'}]
-          ),
-          # 節點 2: 負責將 Raw Packets 轉換為 PointCloud2 點雲
-          ComposableNode(
-              package='velodyne_pointcloud',
-              plugin='velodyne_pointcloud::Convert',
-              name='velodyne_convert_node',
-              parameters=[{'calibration': 'VLP16db.yaml'}]
-          )
-      ]
-  )
+container = ComposableNodeContainer(
+    name='velodyne_container',
+    namespace='',
+    package='rclcpp_components',
+    executable='component_container',
+    composable_node_descriptions=[
+        # 節點 1: 負責接收 UDP 原始封包 (Raw Packets)
+        ComposableNode(
+            package='velodyne_driver',
+            plugin='velodyne_driver::VelodyneDriver',
+            name='velodyne_driver_node',
+            parameters=[{'device_ip': '192.168.1.201'}]
+        ),
+        # 節點 2: 負責將 Raw Packets 轉換為 PointCloud2 點雲
+        ComposableNode(
+            package='velodyne_pointcloud',
+            plugin='velodyne_pointcloud::Convert',
+            name='velodyne_convert_node',
+            parameters=[{'calibration': 'VLP16db.yaml'}]
+        )
+    ]
+)
   ```
 - **Node 類別歸納**：
-  - **`Data Ingestion Node` (數據接入節點)**：發布原始封包 (如 `velodyne_msgs/msg/VelodyneScan`)。
-  - **`Data Processing/Nodelet Node` (數據處理節點)**：訂閱原始封包，發布標準的 `sensor_msgs/msg/PointCloud2`。
-  - **設計特色 (Zero-Copy 共享記憶體)**：使用 Composable Nodes (組件化節點)。這類 Node 不直接繼承獨立的 Process，而是編譯為動態連結檔 (Plugin)。當兩者被加載至同一個 `component_container` 時，ROS 2 內部的 `intra-process communication` 機制會以**指標傳遞**的方式在節點間傳輸大容量點雲，實現 **Zero-Copy (零拷貝)**，大幅節省 CPU 資源。
-
-### 2. 彙整：感測器驅動 Node 架構設計建議
-
-綜合上述主流產品的 Launch 與原始碼架構，當你為新硬體編寫用於融合的 ROS 2 驅動時，建議參考以下 Node 類別結構：
-
-```
-                        ┌────────────────────────┐
-                        │   Physical Sensor      │
-                        └───────────┬────────────┘
-                                    │ 底層通訊: Serial/UDP/I2C
-                                    ▼
-                        ┌────────────────────────┐
-                        │   Hardware SDK Layer   │
-                        │ (分離 ROS 依賴的純 C++ 類)│
-                        └───────────┬────────────┘
-                                    │
-                       (std::thread / Worker Loop)
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ ROS 2 Wrapper (LifecycleNode / ComposableNode)                  │
-│                                                                 │
-│   - Topic Publisher: 發布符合 REP-103/117/118 標準的 Topic        │
-│   - Parameters Manager: 讀取 ROS 2 Params (Baudrate, frame_id)   │
-│   - TF2 Static Broadcaster: 發布 sensor_frame 靜態外參座標轉換     │
-│   - Lifecycle Management: on_configure(), on_activate()         │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-1. **分離硬體 SDK 與 ROS 2 Wrapper**：先用純 C++ 寫好感測器的連線與資料解析類別，再用 ROS 2 Component 或 LifecycleNode 將其包裝。這利於單獨在無 ROS 2 環境下進行單元測試。
-2. **遵守時空標準發布**：
-   - 驅動節點在發布資料時，Header 中的 `stamp` 必須填入感測器採樣時的精準時間（使用 `this->now()` 或硬體時戳對齊）。
-   - `frame_id` 應設為可由 Parameter 動態配置的值（如 `laser_frame`），並在節點內部建立 `tf2_ros::StaticTransformBroadcaster` 發布初始的安裝位置坐標。
+o	Data Ingestion Node (數據接入節點)：負責底層硬體通訊，接收 I/O 數據並發布內部定義的原始封包（如 velodyne_msgs/msg/VelodyneScan）。
+o	Data Processing / Composable Node (數據處理組件節點)：（註：此處在 ROS 1 傳統架構中稱為 Nodelet，在 ROS 2 已全面升級並規範為 Component）。該節點負責訂閱原始封包並進行演算法運算，最終發布標準的系統層級 Topic（如 sensor_msgs/msg/PointCloud2）。

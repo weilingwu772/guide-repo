@@ -51,9 +51,10 @@
 
 * **REP-103 Standard Units of Measure and Coordinate Conventions**
 
-    REP-103 定義出 ROS 中的測量單位、坐標系、旋轉表示方式與協方差矩陣，確保不同軟體元件之間在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。規定如下：
+  REP-103 定義出 ROS 中的測量單位、坐標系、旋轉表示方式與協方差矩陣，確保不同軟體元件之間在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。規定如下：
 
-     * **度量單位**：全面使用國際單位制 (International System of Units，簡稱SI)
+  * **度量單位**：全面使用國際單位制 (International System of Units，簡稱SI)
+
     | 物理量                    | 單位           |
     | --------------------- | ----------------- |
     | 長度（Length）            | meter          |
@@ -68,28 +69,28 @@
     | 溫度（temperature）       | celsius        |
     | 磁場（magnetism）         | tesla          |
 
-      * **坐標系**：採用右手坐標系 (Right-Handed Coordinate System)
-      - X 軸：Forward（指向機器人前方）
-      - Y 軸：Left（指向機器人左方）
-      - Z 軸：Up（垂直向上）
+  * **坐標系**：採用右手坐標系 (Right-Handed Coordinate System)
+    - X 軸：Forward（指向機器人前方）
+    - Y 軸：Left（指向機器人左方）
+    - Z 軸：Up（垂直向上）
       
-      * **大地坐標系**：採用 ENU (East-North-Up) 坐標系
-      - X 軸：East（東方）
-      - Y 軸：North（北方）
-      - Z 軸：Up（垂直向上）
+  * **大地坐標系**：採用 ENU (East-North-Up) 坐標系
+    - X 軸：East（東方）
+    - Y 軸：North（北方）
+    - Z 軸：Up（垂直向上）
       
-      * **具有`_optical`後綴的坐標系**：相機使用的坐標系與機器人本體不同
-      - X 軸：Right（右方）
-      - Y 軸：Down（下方）
-      - Z 軸：Forward（向前）
+  * **具有`_optical`後綴的坐標系**：相機使用的坐標系與機器人本體不同
+    - X 軸：Right（右方）
+    - Y 軸：Down（下方）
+    - Z 軸：Forward（向前）
       
-      * **旋轉表示方式**：逆時針方向為正
-      1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點(singularities) 。
-      2. Rotation Matrix：無奇異點。
-      3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
-      4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
+  * **旋轉表示方式**：逆時針方向為正
+    1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點(singularities) 。
+    2. Rotation Matrix：無奇異點。
+    3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
+    4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
       
-      * **協方差矩陣**：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
+  * **協方差矩陣**：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
 
 * **REP-105 Coordinate Frames for Mobile Platforms**
 

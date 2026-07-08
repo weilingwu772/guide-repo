@@ -1,6 +1,6 @@
 # 感測器融合的 ROS 2 工程標準 (ROS 2 engineering standards for sensor fusion)
 
-在機器人開發中，特別是當需要將多個感測器（如光達、深度相機、IMU）的數據融合成統一的定位與地圖時，**工程標準化**是確保系統穩定與不同演算法（如 Nav2、Cartographer、robot_localization）順利串接的關鍵。本章將從 **REP 規範**與**國際主流設備節點設計（從 Launch 回推）**兩個面向，為開發人員提供寫程式時的具體標準參考。
+在機器人開發中，**工程標準**是確保系統穩定與不同演算法（如 Nav2、Cartographer、robot_localization）順利串接的關鍵。本章將從 **REP d開發規範**與**國際主流設備節點設計**兩個面向，為開發人員提供寫程式時的具體參考。
 
 ---
 
@@ -11,7 +11,6 @@
 ### 1. 確認開發版本
 
 開發的首要工作，是先決定這個機器人開發專案要使用哪個版本的 ROS 2，或依據既有的作業系統選擇相容的 ROS 2 版本，這是因為不同的 ROS 2 版本，其支援的作業系統、編譯工具及套件皆有所不同，因此就需要透過 REP-2000 查閱，以確認各版本的支援資訊。
-
 
 * **REP-2000 ROS 2 Releases and Target Platforms**
 
@@ -65,7 +64,7 @@
     | 頻率（Frequency）         | hertz          |
     | 力（Force）               | newton         |
     | 扭矩（power）             | watt           |
-    | 電壓（power）             | volt           |
+    | 電壓（voltage）           | volt           |
     | 溫度（temperature）       | celsius        |
     | 磁場（magnetism）         | tesla          |
 

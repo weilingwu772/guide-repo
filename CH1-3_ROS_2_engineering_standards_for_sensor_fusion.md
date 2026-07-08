@@ -1,18 +1,18 @@
-# 感測器融合的 ROS 2 工程標準 (ROS 2 engineering standards for sensor fusion)
+# 多感測器融合的 ROS 2 工程規範 (ROS 2 engineering standards for sensor fusion)
 
-在機器人開發中，**工程標準**是確保系統穩定與不同演算法（如 Nav2、Cartographer、robot_localization）順利串接的關鍵。本章將從 **REP 開發規範**與**國際主流設備節點設計**兩個面向，為開發人員提供寫程式時的具體參考。
+機器人開發過程中，最令人頭痛的往往不是演算法本身，而是「資料格式不對齊」與「座標系混亂」，為確保多個感測器與後續演算法能夠順暢對接，依循標準的工程規範便成為核心基礎，本節將從「既有」與「常見」兩個面向，提供開發者寫程式時的架構參考。
 
 ---
 
-## ROS Enhancement Proposal (REP) 開發規範
+## 既有開發規範 — ROS Enhancement Proposal (REP) 
 
-以下依開發機器人時的工作順序（確認開發版本 $\rightarrow$ 統一影像資料格式 $\rightarrow$ 統一物理量標準）來介紹常用的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考，依循此規範將有助於後續使用 ROS 2 進行多感測器融合 (sensor fusion) 演算法。
+以下依開發機器人時的工作順序（確認開發版本 → 統一影像資料格式 → 統一物理量標準）來介紹常見的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考，依循此規範將有助於後續使用 ROS 2 進行多感測器融合 (sensor fusion) 演算法。
 
 ### 1. 確認開發版本
 
 開發的首要工作，是先決定這個機器人開發專案要使用哪個版本的 ROS 2，或依據既有的作業系統選擇相容的 ROS 2 版本，這是因為不同的 ROS 2 版本，其支援的作業系統、編譯工具及套件皆有所不同，因此就需要透過 REP-2000 查閱，以確認各版本的支援資訊。
 
-* **REP-2000 ROS 2 Releases and Target Platforms**
+* **REP-2000 ROS 2 Releases and Target Platforms**（ [文件連結](https://www.ros.org/reps/rep-2000.html)）
 
     REP-2000 除了說明 ROS 2 的發行策略（一年一版，並分為長期支援 LTS 版本與非長期支援 Non-LTS 版本），也定義每個 ROS 2 版本對應支援的作業系統有哪些，同時將各個作業系統被支援的程度分為三個等級，Tier 1 代表完全支援，Tier 2 次之，Tier 3 則是最少支援，僅提供基本相容性。
     
@@ -28,29 +28,29 @@
 
 不同感測器隨著廠牌和類型，會有不同形式的距離或影像資料，若缺乏一致的資料格式，容易造成後續演算法的相容性問題；因此就需要參考 REP-117 與 REP-118 來確保軟體層面輸出的資料符合 ROS 2 官方標準。
 
-* **REP-117 Informational Distance Measurements**
+* **REP-117 Informational Distance Measurements**（ [文件連結](https://www.ros.org/reps/rep-0117.html)）
 
-    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種範例，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
     
-    舉例來說，傳統開發可能出現 `0.0`、`-1.0`、`minimum_range`、`maximum_range` 或其他自訂數值，來表示超出量測範圍或量測異常，資料語意的不同，容易導致演算法搞錯意思，造成機器人緊急煞車或路徑規劃出錯。REP-117 建議遵循以下形式：
+    舉例來說，傳統開發可能會使用自訂數值，來表示超出量測範圍或量測異常，這種資料語意的不一致，容易導致演算法解讀錯誤，進而造成機器人緊急煞車或路徑規劃出錯，故建議遵循 REP-117 以下形式：
     
-     - 當測量值**低於感測器最小偵測距離**時，數據應設為 **`-Inf`**（Negative Infinity），表示物體距離過近，已超出感測器可量測範圍最小值，而非量測失敗。
-     - 當測量值**高於感測器最大偵測距離**或未偵測到任何物體時，數據應設為 **`+Inf`**（Positive Infinity），表示目標超出感測器的量測範圍，或該方向沒有接收到有效回波。
+     - 當測量值**低於感測器最小偵測距離**時，數據應設為 **`-Inf`**（Negative Infinity），表示物體距離太近，已超出感測器可量測範圍最小值，而非量測失敗。
+     - 當測量值**高於感測器最大偵測距離**或**未偵測到任何物體**時，數據應設為 **`+Inf`**（Positive Infinity），表示目標超出感測器的量測範圍，或該方向沒有接收到有效回波。
      - 當感測器發生錯誤、資料遺失或量測結果無效時，數據應設為 **`NaN`**（Not a Number），表示此筆量測資料不可用，請演算法視為無效資料並直接忽略。
 
-* **REP-118 Depth Images**
+* **REP-118 Depth Images**（ [文件連結](https://www.ros.org/reps/rep-0118.html)）
 
-    REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、`Topic`，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
+    REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、Topic，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
     
     舉例來說，感測器應使用 `sensor_msgs/Image` 來表示深度影像，而非 `sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配 `camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
 
 ### 3. 統一物理量標準
 
-在寫多感測器融合演算法時，數據的空間與時間對齊是核心，若不同感測器使用不同的度量單位、坐標系或坐標框架，即使取得的是同一個物體的資訊，也可能因解讀方式不同而產生融合誤差，因此開發前就需參考 REP-103 與 REP-105，確保不同感測器能在 ROS 中正確地交換與整合資料。
+在寫多感測器融合演算法時，數據的空間與時間對齊是核心，若不同感測器使用不同的度量單位、座標系或座標框架，即使取得的是同一個物體的資訊，也可能因解讀方式不同而產生融合誤差，因此開發前就需參考 REP-103 與 REP-105，確保不同感測器能在 ROS 中正確地交換與整合資料。
 
-* **REP-103 Standard Units of Measure and Coordinate Conventions**
+* **REP-103 Standard Units of Measure and Coordinate Conventions**（ [文件連結](https://www.ros.org/reps/rep-0103.html)）
 
-  REP-103 定義出 ROS 中的測量單位、坐標系、旋轉表示方式與協方差矩陣，確保不同軟體元件之間在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。規定如下：
+  REP-103 定義 ROS 中的單位與座標系，確保不同軟體在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。各項目規範如下：
 
   * **度量單位**：全面使用國際單位制 (International System of Units，簡稱SI)
 
@@ -63,22 +63,22 @@
     | 角度（Angle）             | radian         |
     | 頻率（Frequency）         | hertz          |
     | 力（Force）               | newton         |
-    | 扭矩（power）             | watt           |
+    | 功率（power）             | watt           |
     | 電壓（voltage）           | volt           |
     | 溫度（temperature）       | celsius        |
     | 磁場（magnetism）         | tesla          |
 
-  * **坐標系**：採用右手坐標系 (Right-Handed Coordinate System)
+  * **座標系**：採用右手座標系 (Right-Handed Coordinate System)
     - X 軸：Forward（指向機器人前方）
     - Y 軸：Left（指向機器人左方）
     - Z 軸：Up（垂直向上）
       
-  * **大地坐標系**：採用 ENU (East-North-Up) 坐標系
+  * **大地座標系**：採用 ENU (East-North-Up) 座標系
     - X 軸：East（東方）
     - Y 軸：North（北方）
     - Z 軸：Up（垂直向上）
       
-  * **具有`_optical`後綴的坐標系**：相機使用的坐標系與機器人本體不同
+  * **具有`_optical`後綴的座標系**：相機使用的座標系與機器人本體不同
     - X 軸：Right（右方）
     - Y 軸：Down（下方）
     - Z 軸：Forward（向前）
@@ -89,11 +89,11 @@
     3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
     4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
       
-  * **協方差矩陣**：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
+  * **協方差矩陣**（Covariance Representation）：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
 
-* **REP-105 Coordinate Frames for Mobile Platforms**
+* **REP-105 Coordinate Frames for Mobile Platforms**（ [文件連結](https://www.ros.org/reps/rep-0105.html)）
 
-    REP-105 建立移動平台（Mobile Platforms）的坐標系命名規範，使驅動、模型、函式庫及應用程式能共享相同的座標框架定義，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內機器人通常只會使用 base_link、odom 與 map 三個座標系，earth 則主要應用於戶外應用情境。
+    REP-105 建立移動平台的座標系命名規範，使驅動、模型、函式庫及應用程式能共享相同的座標框架，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內用機器人通常只會使用 `base_link`、`odom` 與 `map` 三個座標系，`earth` 則主要應用在戶外場景。
 
 ```mermaid
  graph LR
@@ -104,9 +104,9 @@
 
 ---
 
-## 2. 從國際主流產品 ROS package 彙整 Node 類別
+## 2. 常見產品規格 — 從 ROS package 觀察主流設計
 
-為了解國際大廠如何將硬體接入 ROS 2 體系，我們可以從各家官方的 Launch 檔宣告回推，歸納出它們的 Node 類別架構設計。以下彙整了 Intel RealSense、RPLIDAR 等主流產品的工程實踐。
+在實務上，可以透過觀察常見產品提供的官方 ROS Package 之 Launch 檔案結構，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動或整合系統時可參考的內容：
 
 ### 1. 典型主流產品的 Node 宣告回推
 
@@ -129,8 +129,7 @@
       }]
   )
   ```
-- **Node 類別歸納**：
-  - **`Driver Node` (硬體驅動/數據提供者)**：主要發布 `sensor_msgs/msg/Image` (RGB & Depth)、`sensor_msgs/msg/PointCloud2` 與 `sensor_msgs/msg/Imu`。
+- **Node 類別**：**`Driver Node` (硬體驅動/數據提供者)**，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2` 與 `sensor_msgs/msg/Imu`。
 
 #### 案例 B：RPLIDAR (Slamtec) — 2D 機械旋轉式光達
 - **官方 Package**：`rplidar_ros`
@@ -151,41 +150,4 @@
       output='screen'
   )
   ```
-- **Node 類別歸納**：
-  - **`Sensor Data Publisher Node` (單一數據發布節點)**：主要發布 `sensor_msgs/msg/LaserScan`。
-  - **設計特色**：著重於底層串口通訊 (UART to USB) 的斷線重連機制與執行緒管理。內部會開闢一個工作執行緒 (Worker Thread) 持續讀取串口緩衝區，並使用 `std::mutex` 與 ROS 發布主執行緒進行執行緒安全（Thread-Safe）的資料傳遞。
-
-#### 案例 C：Velodyne (3D 光達) — 多線式 3D 光達
-- **官方 Package**：`velodyne_driver` 與 `velodyne_pointcloud`
-- **Launch 檔宣告回推**：
-  在 Launch 檔中，Velodyne 採用了**管線化 (Pipeline) / 組件化節點 (Composable Nodes / Components)** 設計，將不同的功能模組動態加載至同一個容器中：
-  ```Python
-from launch_ros.actions import ComposableNodeContainer
-from launch_ros.descriptions import ComposableNode
-
-container = ComposableNodeContainer(
-    name='velodyne_container',
-    namespace='',
-    package='rclcpp_components',
-    executable='component_container',
-    composable_node_descriptions=[
-        # 節點 1: 負責接收 UDP 原始封包 (Raw Packets)
-        ComposableNode(
-            package='velodyne_driver',
-            plugin='velodyne_driver::VelodyneDriver',
-            name='velodyne_driver_node',
-            parameters=[{'device_ip': '192.168.1.201'}]
-        ),
-        # 節點 2: 負責將 Raw Packets 轉換為 PointCloud2 點雲
-        ComposableNode(
-            package='velodyne_pointcloud',
-            plugin='velodyne_pointcloud::Convert',
-            name='velodyne_convert_node',
-            parameters=[{'calibration': 'VLP16db.yaml'}]
-        )
-    ]
-)
-  ```
-- **Node 類別歸納**：
-o	Data Ingestion Node (數據接入節點)：負責底層硬體通訊，接收 I/O 數據並發布內部定義的原始封包（如 velodyne_msgs/msg/VelodyneScan）。
-o	Data Processing / Composable Node (數據處理組件節點)：（註：此處在 ROS 1 傳統架構中稱為 Nodelet，在 ROS 2 已全面升級並規範為 Component）。該節點負責訂閱原始封包並進行演算法運算，最終發布標準的系統層級 Topic（如 sensor_msgs/msg/PointCloud2）。
+- **Node 類別**：**`Sensor Data Publisher Node` (單一數據發布節點)**，主要發布 `sensor_msgs/msg/LaserScan`。

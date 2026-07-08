@@ -6,53 +6,100 @@
 
 ## ROS Enhancement Proposal (REP) 開發規範
 
-本文依照實際開發機器人時的順序（確認開發平台版本 $\rightarrow$ 挑設備看規格 $\rightarrow$ 依應用需求寫設定值），來介紹核心的 REP 標準，並整理出與機器人感知系統較為相關的內容，幫助讀者更容易理解與實際應用。
+以下依開發機器人時的工作順序（確認開發版本 $\rightarrow$ 統一影像資料格式 $\rightarrow$ 統一物理量標準）來介紹常用的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考，依循此規範將有助於後續使用 ROS 2 進行多感測器融合 (sensor fusion) 演算法。
 
-### 1. 確認開發平台版本：REP-2000 (ROS 2 Releases)
-開發的第一步是先決定專案要使用的 ROS 2 發行版（Distribution），因為不同發行版所支援的作業系統、程式語言版本及開發工具皆有所不同。REP-2000 即定義了各個 ROS 2 發行版的支援平台、生命週期（EOL）及目標開發環境。
-常見的 LTS 發行版包括：
-Humble Hawksbill：支援至 2027 年 5 月，主要目標平台為 Ubuntu 22.04 LTS (Jammy)。
-Jazzy Jalisco：支援至 2029 年 5 月，主要目標平台為 Ubuntu 24.04 LTS (Noble)。
-工程實務建議：在開發 C++ 節點、感測器驅動或演算法時，應配合所選 ROS 2 發行版所對應的編譯器與 C++ 標準，例如 Humble 通常採用 Ubuntu 22.04 的 GCC 11 與 C++17，而 Jazzy 則配合 Ubuntu 24.04 的 GCC 13 與 C++20。因此，CMakeLists.txt 中的 CMAKE_CXX_STANDARD 應與目標發行版保持一致，以降低編譯錯誤及 ABI 相容性問題，並確保能與 ROS 2 官方套件正常整合。
+### 1. 確認開發版本
 
-### 2. 挑設備看規格（資料格式）：REP-117 與 REP-118
-當你挑選光達或相機時，除了硬體物理指標，還必須確保軟體層面輸出的 Topic 資料格式符合 ROS 2 官方標準。
+開發的首要工作，是先決定這個機器人開發專案要使用哪個版本的 ROS 2，或依據既有的作業系統選擇相容的 ROS 2 版本，這是因為不同的 ROS 2 版本，其支援的作業系統、編譯工具及套件皆有所不同，因此就需要透過 REP-2000 查閱，以確認各版本的支援資訊。
 
-- **REP-117: Informative Range Limits for Laser Scan Data (光達雷射掃描數據限值規範)**
-  - 傳統開發常以 `0.0` 或 `-1.0` 來表示雷射測距超出範圍（太近或太遠）。這會導致 EKF 融合演算法誤判為距離障礙物 0 公尺，造成機器人緊急煞車或路徑規劃出錯。
-  - **標準規範**：
-    - 當測量值**低於感測器最小偵測距離**（太近）時，數據應設為 **`NaN`**（Not a Number）。
-    - 當測量值**高於感測器最大偵測距離**（無反射訊號或太遠）時，數據應設為 **`+Inf`**（Positive Infinity）。
-  - **寫程式參考**：在撰寫光達驅動或資料預處理節點時，必須嚴格遵循 REP-117 的數值設定方式。
-- **REP-118: Depth Images (深度圖規範)**
-  - 規範了 3D 相機輸出的深度圖像 (Depth Image) 格式。
-  - **標準規範**：深度圖應使用 `sensor_msgs/msg/Image` 格式傳輸，其中畫素格式應為 `32FC1` (Float32，單位為**公尺**)。若使用 `16UC1` (UInt16，單位為**毫米**)，則必須在節點參數或說明文件中明確聲明並進行轉換，以便與其他 3D 視覺演算法對接。
+**REP-2000 ROS 2 Releases and Target Platforms**
 
-### 3. 依應用需求寫設定值（座標與單位）：REP-103 與 REP-105
-在寫感測器融合演算法時，數據的空間與時間對齊是核心。這需要所有感測器的物理單位與座標定義完全統一。
+REP-2000 除了說明 ROS 2 的發行策略（一年一版，並分為長期支援 LTS 版本與非長期支援 Non-LTS 版本），也定義每個 ROS 2 版本對應支援的作業系統有哪些，同時將各個作業系統被支援的程度分為三個等級，Tier 1 代表完全支援，Tier 2 次之，Tier 3 則是最少支援，僅提供基本相容性。
 
-- **REP-103: Standard Units of Measure and Coordinate Conventions (度量單位與座標 Conventions)**
-  - **度量單位**：全面使用國際單位制 (SI)。
-    - 長度：公尺 (m)
-    - 角度：弧度 (rad)，而非度數 (degree)。
-    - 速度：m/s 與 rad/s。
-  - **座標系（右手座標系）**：ROS 2 嚴格採用**右手座標系 (Right-Handed Coordinate System)**。
-    - **X 軸**：Forward（指向機器人前方）
-    - **Y 軸**：Left（指向機器人左方）
-    - **Z 軸**：Up（垂直向上）
-  - **旋轉方向**：逆時針方向為正。
+因此，為避免因版本問題而收到錯誤訊息，導致無法順利啟動 ROS 2，建議先使用這份文件做版本查詢，檢索方法如下：
 
-- **REP-105: Coordinate Frames for Mobile Robots (移動機器人座標系規範)**
-  - 定義了機器人系統中最核心的四個座標系層級：
-    1. **`map` (地圖座標系)**：全球座標系，長期穩定但可能有突變（如 Loop Closure 修正時）。通常由 SLAM 演算法發布。
-    2. **`odom` (里程計座標系)**：局部座標系，短期內連續且平滑，沒有突變，但長期會產生累積漂移。由里程計 (Wheel Odometry/Visual Odometry) 融合發布。
-    3. **`base_link` (機器人本體座標系)**：固定在機器人底盤剛體中心（通常是旋轉中心）。
-    4. **`sensor_frame` (感測器座標系)**：例如 `laser_frame`、`camera_link`，通過 `static_transform_publisher` 發布與 `base_link` 的相對外參。
-  - **感測器融合寫法參考**：
-    - `robot_localization` 節點通常會啟動兩個 EKF 實例：
-      - 一個輸出 `odom` $\rightarrow$ `base_link` 的轉換（融合輪速計與 IMU，保證軌跡連續性）。
-      - 另一個輸出 `map` $\rightarrow$ `odom` 的轉換（加入 GPS 或 AMCL 的絕對定位資訊，修正漂移）。
-    - 感測器融合節點在讀取各感測器 Topic 時，必須利用 `tf_buffer` 查詢感測器相對於 `base_link` 的座標轉換關係，將所有數據投影至同一個座標系下再行卡爾曼濾波。
+假設已決定要使用 ROS 2 的 Humble Hawksbill 作為開發版本，先在 REP-2000 找到該版本名稱，並可從中看到對應支援的作業系統（Target Platform）表格，而此版本Tier 1（也就是完全支援）作業系統有：
+Ubuntu Jammy (22.04) 的 64 位元版本
+Windows 10 (VS2019)
+
+接著查看 Ubuntu 官方的 Python 版本對照表 (Available Python versions)，就能得知 Ubuntu 22.04 對應 Python 3.10 版本，也就是說，要用 Python 3.10 才能完整安裝及執行 ROS 2 Humble Hawksbill。
+
+### 2. 統一影像資料格式
+
+不同感測器隨著廠牌和類型，會有不同形式的距離或影像資料，若缺乏一致的資料格式，容易造成後續演算法的相容性問題；因此就需要參考 REP-117 與 REP-118 來確保軟體層面輸出的資料符合 ROS 2 官方標準。
+
+**REP-117 Informational Distance Measurements**
+
+REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+
+舉例來說，傳統開發可能出現 `0.0`、`-1.0`、`minimum_range`、`maximum_range` 或其他自訂數值，來表示超出量測範圍或量測異常，資料語意的不同，容易導致演算法搞錯意思，造成機器人緊急煞車或路徑規劃出錯。REP-117 建議遵循以下形式：
+- 當測量值**低於感測器最小偵測距離**時，數據應設為 **`-Inf`**（Negative Infinity），表示物體距離過近，已超出感測器可量測範圍最小值，而非量測失敗。
+- 當測量值**高於感測器最大偵測距離**或未偵測到任何物體時，數據應設為 **`+Inf`**（Positive Infinity），表示目標超出感測器的量測範圍，或該方向沒有接收到有效回波。
+- 當感測器發生錯誤、資料遺失或量測結果無效時，數據應設為 **`NaN`**（Not a Number），表示此筆量測資料不可用，請演算法視為無效資料並直接忽略。
+
+**REP-118 Depth Images**
+
+REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、`Topic`，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
+
+舉例來說，感測器應使用 `sensor_msgs/Image` 來表示深度影像，而非 `sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配 `camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
+
+### 3. 統一物理量標準
+
+在寫多感測器融合演算法時，數據的空間與時間對齊是核心，若不同感測器使用不同的度量單位、坐標系或坐標框架，即使取得的是同一個物體的資訊，也可能因解讀方式不同而產生融合誤差，因此開發前就需參考 REP-103 與 REP-105，確保不同感測器能在 ROS 中正確地交換與整合資料。
+
+**REP-103 Standard Units of Measure and Coordinate Conventions**
+
+REP-103 定義出 ROS 中的測量單位、坐標系、旋轉表示方式與協方差矩陣，確保不同軟體元件之間在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。規定如下：
+
+- **度量單位**：全面使用國際單位制 (International System of Units，簡稱SI)
+
+| 物理量                    | 單位           |
+| --------------------- | ----------------- |
+| 長度（Length）            | meter          |
+| 質量（Mass）              | kilogram       |
+| 時間（Time）              | second         |
+| 電流（Current）           | ampere         |
+| 角度（Angle）             | radian         |
+| 頻率（Frequency）         | hertz          |
+| 力（Force）               | newton         |
+| 扭矩（power）             | watt           |
+| 電壓（power）             | volt           |
+| 溫度（temperature）       | celsius        |
+| 磁場（magnetism）         | tesla          |
+
+- **坐標系**：採用右手坐標系 (Right-Handed Coordinate System)
+  - X 軸：Forward（指向機器人前方）
+  - Y 軸：Left（指向機器人左方）
+  - Z 軸：Up（垂直向上）
+
+- **大地坐標系**：採用 ENU (East-North-Up) 坐標系
+  - X 軸：East（東方）
+  - Y 軸：North（北方）
+  - Z 軸：Up（垂直向上）
+
+- **具有`_optical`後綴的坐標系**：相機使用的坐標系與機器人本體不同
+  - X 軸：Right（右方）
+  - Y 軸：Down（下方）
+  - Z 軸：Forward（向前）
+
+- **旋轉表示方式**：逆時針方向為正
+  1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點(singularities) 。
+  2. Rotation Matrix：無奇異點。
+  3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
+  4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
+
+- **協方差矩陣**：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
+
+**REP-105 Coordinate Frames for Mobile Platforms**
+
+REP-105 建立移動平台（Mobile Platforms）的坐標系命名規範，使驅動、模型、函式庫及應用程式能共享相同的座標框架定義，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內機器人通常只會使用 base_link、odom 與 map 三個座標系，earth 則主要應用於戶外應用情境。
+
+```mermaid
+graph LR
+    earth --> map
+    map --> odom
+    odom --> base_link
+```
 
 ---
 

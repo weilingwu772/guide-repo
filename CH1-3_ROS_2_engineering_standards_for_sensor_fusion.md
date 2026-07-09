@@ -174,7 +174,7 @@
           'serial_baudrate': 115200,
           # 實體 UART 的鮑率 (Baud rate)
           'frame_id': 'laser_frame',      
-          # 該光達數據在 TF 樹中的座標系名稱 (供 Rviz/Nav2 識別)
+          # 該光達數據在 TF 樹中的座標系名稱
           'inverted': False,
           # 倒置安裝模式 (若機構設計將光達反著裝，可由驅動自動反轉)
           'angle_compensate': True,
@@ -188,4 +188,4 @@
 
   ```
 
-- **節點 Node 觀察**：採 **`Driver Node` (單一數據發布節點)** 模式。原廠驅動除將硬體「角度/距離」二維陣列打包發布為 `sensor_msgs/msg/LaserScan` 外，應依循 REP-117 規範以 `+Inf`、`-Inf` 或 `NaN` 表示異常距離，嚴禁使用自訂資料格式與異常數值。
+- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動會將硬體當下的旋轉角度與探測距離，打包並發布 `sensor_msgs/msg/LaserScan`。

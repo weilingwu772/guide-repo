@@ -108,7 +108,7 @@
 
 在實務上，可以透過觀察常見產品提供的官方 ROS Package 之 Launch 檔結構，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動或整合系統時可參考的內容：
 
-### 案例 A：Intel RealSense (D400系列) — 影像與深度感測器
+### 案例 A：RealSense (D400系列) — 影像與深度感測器
 - **官方 Package**：`realsense2_camera`
 - **官方 Launch 檔範例**：
   ```python

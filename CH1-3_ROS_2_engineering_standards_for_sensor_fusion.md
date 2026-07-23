@@ -1,12 +1,48 @@
 # 多感測器融合的 ROS 2 工程規範 (ROS 2 engineering standards for sensor fusion)
 
-機器人開發過程中，最令人頭痛的往往不是演算法本身，而是「資料格式不對齊」與「座標系混亂」，為確保多個感測器與後續演算法能夠順暢對接，以實踐**硬體抽象化**（Hardware Abstraction）精神，依循工程規範便成為重點建議的工作項目，故本節將從「既有」與「常見」兩個面向，提供開發者寫程式時的架構參考。
+進一步探究機器人感知系統的開發流程，會發現實務上最令人頭痛的往往不是演算法本身，而是各個感測器介面與資料表示方式的不一致，不同感測器通常具有各自的原生介面（Native Interface），其資料格式、通訊方式、欄位定義與操作流程，往往由硬體製造商自行設計，為協助開發者存取與控制硬體，原廠通常也會提供相應的軟體支援，例如感測器的 SDK（Software Development Kit，軟體開發工具包）、工業電腦的 BSP（Board Support Package，板級支援套件）等，裡面包含原廠已處理的程式碼、函式庫、使用說明文件或範例檔，使開發者能夠取得感測器原始資料，或呼叫硬體所提供的特定功能。
+
+然而，感測器資料在進入演算法之前，通常需要經過一系列封裝與轉換流程，此流程多半由驅動程式（Driver）或介面轉接元件（Adapter）負責，將原廠定義的資料格式轉換為開發系統能理解的資料格式，就以 ROS 2 來說，就是將感測器資料封裝為具有一致欄位定義、資料語意與單位規範的 ROS Message，以確保多個感測器與後續演算法能夠順暢對接，這種機制實踐了**硬體抽象化**（Hardware Abstraction）的設計理念，其目的在於透過統一介面隔離底層硬體差異，進而降低後續進行多感測器融合（Sensor Fusion）演算法時，因資料格式不一致所造成的系統不穩定問題。
+
+為提升不同感測器之間的整合效率，會建議開發者在處理資料封裝與轉換時，可參考相關工程規範，例如 REP（ROS Enhancement Proposal）規範文件，或是參考其他產品針對 ROS 2 所提供的 Message 定義，都有助於建立一致且符合 ROS 2 軟體框架的資料格式，故本節將從「既有規範」與「常見實務」兩個面向，提供開發者無論是使用原廠提供或是自寫驅動的情況下，在設計程式架構時的參考，並以下圖說明感測器資料由原生介面轉換至 ROS 2 的流程，以及 REP 在其中所扮演的角色。
+
+```mermaid
+flowchart LR
+    subgraph HW["原生介面層"]
+        S["硬體"]
+        NI["原生介面"]
+        S --> NI
+    end
+
+    subgraph CONV["驅動轉換層"]
+        DA["驅動或介面轉接元件"]
+    end
+
+    subgraph ROS["ROS 2"]
+        MSG["ROS Message"]
+        TOPIC["Topic"]
+        MSG --> TOPIC
+    end
+
+    subgraph APP["演算法"]
+        ALG["感測器融合、建圖、導航<br/>等演算法"]
+    end
+
+    NI -->|"原廠資料"| DA
+    DA -->|"封裝與轉換"| MSG
+    TOPIC -->|"發布/訂閱"| ALG
+
+    REP["REP"]
+
+    REP -.->|"提供設計規範"| DA
+    REP -.->|"規範資料格式"| MSG
+```
 
 ---
 
 ## 1. 既有開發規範 — ROS Enhancement Proposal (REP) 
 
-以下依開發機器人時的工作順序（確認開發版本 → 統一影像資料格式 → 統一物理量標準）來介紹常見的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考，依循此規範將有助於後續使用 ROS 2 進行多感測器融合 (sensor fusion) 演算法。
+以下依開發機器人時的工作順序（確認開發版本 → 統一影像資料格式 → 統一物理量標準）來介紹常見的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考。同時也要提醒，REP 所規範的是資料進入 ROS 後應遵循的資料格式，而非感測器原廠本身的原生介面；換言之，REP 不會要求不同廠商在硬體層採用完全相同的通訊協定或資料封包，而是要求各類硬體經由封裝後，應盡可能以一致的方式呈現在開發系統中。
 
 ### 1.1. 確認開發版本
 
@@ -145,7 +181,7 @@
 
   ```
 
-- **節點 Node 觀察**：採 Driver Node 模式，原廠驅動嚴禁使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature` 與 `sensor_msgs/msg/CameraInfo`。
+- **節點 Node 觀察**：採 Driver Node 模式，原廠不建議使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature` 與 `sensor_msgs/msg/CameraInfo`。
 
 ### 案例 B：RPLIDAR (Slamtec) — 2D 機械旋轉式光達
 - **官方 Package**：`rplidar_ros`

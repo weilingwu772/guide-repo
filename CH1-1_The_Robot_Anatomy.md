@@ -53,7 +53,7 @@ graph LR
 | | 超音波 / 紅外線 | 近距離感測器，用於偵測鄰近障礙物以避免碰撞，或作為底部的防墜感測。 | ◉<br>(防撞輔助眼) | ◉ | ● |
 | | 雷達 (RADAR) / 毫米波 | 利用無線電波偵測目標，不易受光線、煙霧、雨霧等環境影響。 | ◉<br>(全天候輔助眼) | ◉ | ◉ |
 | | MEMS 麥克風 | 以電容式為主流技術，接收環境聲音與語音訊號，用於人機語音互動。 | ◉<br>(耳朵) | ○ | ◉ |
-| | 壓力感測 (電子皮膚) | 陣列式壓力感測，技術分為壓阻式、電容式及壓電式三種，主要用於協作型機械手臂（Cobot）的人機安全與接觸偵測，隨著人型機器人發展，逐步延伸至靈巧手、手臂及足部等觸覺感知應用。 | ◉<br>(皮膚) | ○ | ○ |
+| | 電子皮膚 | 陣列式壓力感測，技術分為壓阻式、電容式及壓電式三種，主要用於協作型機械手臂（Cobot）的人機安全與接觸偵測，隨著人型機器人發展，逐步延伸至靈巧手、手臂及足部等觸覺感知應用。 | ◉<br>(皮膚) | ○ | ○ |
 | | 一維力感測器 | 量測單一軸向的受力，單位：牛頓 (N)，主要用於線性關節，亦可整合進靈巧手的指尖用於單點偵測。 | ◉<br>(肌腱) | ◉ | ◉ |
 | | 三維力感測器 | 量測三軸受力（X、Y、Z），單位：牛頓 (N)，用於受力判斷及抓握控制。 | ◉<br>(手指或腳底) | ● | ○ |
 | | 六維力感測器 | 同時量測三軸受力（Fx、Fy、Fz）與三軸扭矩（Mx、My、Mz），單位：牛頓·米（N·m），用於精準力控與步態平衡。 | ●<br>(手腕或腳踝) | ○ | ○ |
@@ -83,9 +83,9 @@ graph LR
   - **超音波 / 紅外線**：Teledyne FLIR(美/US)、睿創微納(中/CN)
   - **雷達(RADAR) / 毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
   - **MEMS 麥克風**：歌爾股份(中/CN)、Knowles(美/US)、瑞聲科技(中/CN)、Infineon Technologies(德/DE)
-  - **壓力感測（電子皮膚）**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)
+  - **電子皮膚**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)
   - **一維力感測**：Sensata(美/US)、Futek(美/US)
-  - **三維力感測 / 六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
+  - **三維 / 六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
   - **GNSS / RTK**：u-blox(瑞/CH)、STMicroelectronics(瑞/CH)
   - **慣性測量單元 (IMU)** ：ADI(美/US)、Bosch(德/DE)
   - **編碼器（Encoder）**：Renishaw(英/UK)、Celera Motion(美/US)
@@ -99,7 +99,7 @@ graph LR
 ## 【運算】機器人的聰明程度
 
 - **國際主流廠**：
-  - **邊緣運算平台**：NVIDIA (美/US)、Intel (美/US)、Qualcomm (美/US)、AMD (美/US)、Siemens (德/DE)、Beckhoff (德/DE)
+  - **邊緣運算平台**：NVIDIA (美/US)、Intel (美/US)、AMD (美/US)、Qualcomm (美/US)、Siemens (德/DE)、Beckhoff (德/DE)
   - **控制器**：STMicroelectronics (瑞/CH)、Texas Instruments (美/US)、Infineon Technologies (德/DE)、NXP (荷/NL)、Microchip (美/US)
 
 - **台灣供應商**：
@@ -149,10 +149,10 @@ graph TD
 ## 【執行】機器人的靈敏程度
 
 - **國際主流廠**：
-  - **減速機**：Harmonic Drive Systems(日/JP)、綠的諧波(中/CN)、Ｎidec Shimpo(日/JP)、Nabtesco(日/JP)、雙環傳動(中/CN)、Wittenstein(德/DE)、Neugart(德/DE)
+  - **減速機**：Harmonic Drive Systems(日/JP)、綠的諧波(中/CN)、Nidec Shimpo(日/JP)、Nabtesco(日/JP)、雙環傳動(中/CN)、Wittenstein(德/DE)、Neugart(德/DE)
   - **馬達**：Kollmorgen(美/US)、BEI Kimco(美/US)、Maxon(瑞/CH)、
   Nidec(日/JP)、YASKAWA(日/JP)、DYNAMIXEL(韓/KR)
-  - **滾珠螺桿**：NSK(日/JP)、THK(日/JP)、Schaeffler(德/DE)
+  - **滾柱螺桿**：NSK(日/JP)、THK(日/JP)、Schaeffler(德/DE)
   - **末端執行器**：靈心巧手(中/CN)、Festo(德/DE)、SCHUNK(德/DE)、因時機器人(中/CN)
   
 - **台灣供應商**：

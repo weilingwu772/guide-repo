@@ -4,7 +4,7 @@
 
 然而，感測器資料在進入演算法之前，通常需要經過一系列封裝與轉換流程，此流程多半由驅動程式（Driver）或介面轉接元件（Adapter）負責，將原廠定義的資料格式轉換為開發系統能理解的資料格式，就以 ROS 2 來說，就是將感測器資料封裝為具有一致欄位定義、資料語意與單位規範的 ROS Message，以確保多個感測器與後續演算法能夠順暢對接，這種機制實踐了**硬體抽象化**（Hardware Abstraction）的設計理念，其目的在於透過統一介面隔離底層硬體差異，進而降低後續進行多感測器融合（Sensor Fusion）演算法時，因資料格式不一致所造成的系統不穩定問題。
 
-為提升不同感測器之間的整合效率，會建議開發者在處理資料封裝與轉換時，可參考相關工程規範，例如 REP（ROS Enhancement Proposal）規範文件，或是參考其他產品針對 ROS 2 所提供的 Message 定義，都有助於建立一致且符合 ROS 2 軟體框架的資料格式，故本節將從「既有規範」與「常見實務」兩個面向，提供開發者無論是使用原廠提供或是自寫驅動的情況下，在設計程式架構時的參考，並以下圖說明感測器資料由原生介面轉換至 ROS 2 的流程，以及 REP 在其中所扮演的角色。
+為提升不同感測器之間的整合效率，會建議開發者在處理資料封裝與轉換時，可參考相關工程規範，例如 REP（ROS Enhancement Proposal）規範文件，或是參考其他產品針對 ROS 2 所提供的 Message 定義，都有助於建立一致且符合 ROS 2 軟體框架的資料格式，故本節將從「既有規範」與「常見實務」兩個面向，提供開發者無論是使用原廠提供或是自寫驅動程式的情況下，在設計程式架構時的參考，並以下圖說明感測器資料由原生介面轉換至 ROS 2 的流程，以及 REP 在其中所扮演的角色。
 
 ```mermaid
 flowchart LR
@@ -22,7 +22,7 @@ flowchart LR
     end
 
     subgraph CONV["驅動轉換"]
-        DA["驅動或介面轉接元件"]
+        DA["驅動程式或介面轉接元件"]
     end
 
     subgraph ROS["ROS 2"]
@@ -49,7 +49,7 @@ flowchart LR
 
 ## 1. 既有開發規範 — ROS Enhancement Proposal (REP) 
 
-以下依開發機器人時的工作順序（確認開發版本 → 統一影像資料格式 → 統一物理量標準）來介紹常見的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考。同時也要提醒，REP 所規範的是資料進入 ROS 後應遵循的資料格式，而非感測器原廠本身的原生介面；換言之，REP 不會要求不同廠商在硬體層採用完全相同的通訊協定或資料封包，而是要求各類硬體經由封裝後，應盡可能以一致的方式呈現在開發系統中。
+以下依開發機器人時的工作順序（確認開發版本 → 統一物理量標準 → 感測資料標準化）來介紹常見的 REP 開發規範文件，並整理出與機器人感知系統較為相關的內容，供開發者參考。同時也要提醒，REP 所規範的是資料進入 ROS 後應遵循的資料格式，而非感測器原廠本身的原生介面；換言之，REP 不會要求不同廠商在硬體層採用完全相同的通訊協定或資料封包，而是要求各類硬體經由封裝後，應盡可能以一致的方式呈現在開發系統中。
 
 ### 1.1. 確認開發版本
 
@@ -67,27 +67,7 @@ flowchart LR
     
     接著查看 Ubuntu 官方的 Python 版本對照表 (Available Python versions)，就能得知 Ubuntu 22.04 對應 Python 3.10 版本，也就是說，要用 Python 3.10 才能完整安裝及執行 ROS 2 Humble Hawksbill。
 
-### 1.2. 統一影像資料格式
-
-不同感測器隨著廠牌和類型，會有不同形式的距離或影像資料，若缺乏一致的資料格式，容易造成後續演算法的相容性問題；因此就需要參考 REP-117 與 REP-118 來確保軟體層面輸出的資料符合 ROS 2 官方標準。
-
-* **REP-117 Informational Distance Measurements**（ [文件連結](https://www.ros.org/reps/rep-0117.html)）
-
-    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
-    
-    舉例來說，傳統開發可能會使用自訂數值，來表示超出量測範圍或量測異常，這種資料語意的不一致，容易導致演算法解讀錯誤，進而造成機器人緊急煞車或路徑規劃出錯，故建議遵循 REP-117 以下形式：
-    
-     - 當測量值**低於感測器最小偵測距離**時，數據應設為 **`-Inf`**（Negative Infinity），表示物體距離太近，已超出感測器可量測範圍最小值，而非量測失敗。
-     - 當測量值**高於感測器最大偵測距離**或**未偵測到任何物體**時，數據應設為 **`+Inf`**（Positive Infinity），表示目標超出感測器的量測範圍，或該方向沒有接收到有效回波。
-     - 當感測器發生錯誤、資料遺失或量測結果無效時，數據應設為 **`NaN`**（Not a Number），表示此筆量測資料不可用，請演算法視為無效資料並直接忽略。
-
-* **REP-118 Depth Images**（ [文件連結](https://www.ros.org/reps/rep-0118.html)）
-
-    REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、Topic，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
-    
-    舉例來說，感測器應使用 `sensor_msgs/Image` 來表示深度影像，而非 `sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配 `camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
-
-### 1.3. 統一物理量標準
+### 1.2. 統一物理量標準
 
 在寫多感測器融合演算法時，數據的空間與時間對齊是核心，若不同感測器使用不同的度量單位、座標系或座標框架，即使取得的是同一個物體的資訊，也可能因解讀方式不同而產生融合誤差，因此開發前就需參考 REP-103 與 REP-105，確保不同感測器能在 ROS 中正確地交換與整合資料。
 
@@ -132,11 +112,11 @@ flowchart LR
     3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
     4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
       
-  * **協方差矩陣**（Covariance Representation）：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
+  * **協方差矩陣表現方式**（Covariance Representation）：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
 
 * **REP-105 Coordinate Frames for Mobile Platforms**（ [文件連結](https://www.ros.org/reps/rep-0105.html)）
 
-    REP-105 建立移動平台的座標系命名規範，使驅動、模型、函式庫及應用程式能共享相同的座標框架，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內用機器人通常只會使用 `base_link`、`odom` 與 `map` 三個座標系，`earth` 則主要應用在戶外場景。
+    REP-105 建立移動平台的座標系命名規範，使驅動、模型及函式庫等能共享相同的座標框架，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內用機器人通常只會使用 `base_link`、`odom` 與 `map` 三個座標系，`earth` 則主要應用在戶外場景。
 
 ```mermaid
  graph LR
@@ -145,11 +125,46 @@ flowchart LR
      odom --> base_link
 ```
 
+### 1.3. 感測資料標準化
+
+不同感測器隨著廠牌和類型，會有不同形式的距離或影像資料，其原廠驅動程式的發布方式也可能有所差異，若缺乏一致的資料格式，容易造成後續演算法的相容性問題；因此就需要參考 REP-117、REP-118、REP-138 與 REP-145，來確保軟體層面輸出的資料符合 ROS 2 官方標準。
+
+* **REP-117 Informational Distance Measurements**（ [文件連結](https://www.ros.org/reps/rep-0117.html)）
+
+    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+    
+    舉例來說，傳統開發可能會使用自訂數值，來表示超出量測範圍或量測異常，這種資料語意的不一致，容易導致演算法解讀錯誤，進而造成機器人緊急煞車或路徑規劃出錯，故建議遵循 REP-117 以下形式：
+    
+     - 當測量值**低於感測器最小偵測距離**時，數據應設為 **`-Inf`**（Negative Infinity），表示物體距離太近，已超出感測器可量測範圍最小值，而非量測失敗。
+     - 當測量值**高於感測器最大偵測距離**或**未偵測到任何物體**時，數據應設為 **`+Inf`**（Positive Infinity），表示目標超出感測器的量測範圍，或該方向沒有接收到有效回波。
+     - 當感測器發生錯誤、資料遺失或量測結果無效時，數據應設為 **`NaN`**（Not a Number），表示此筆量測資料不可用，請演算法視為無效資料並直接忽略。
+
+* **REP-118 Depth Images**（ [文件連結](https://www.ros.org/reps/rep-0118.html)）
+
+    REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、Topic，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
+    
+    舉例來說，感測器應使用 `sensor_msgs/Image` 來表示深度影像，而非 `sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配 `camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
+
+* **REP-138 LaserScan Common Topics, Parameters, and Diagnostic Keys**（ [文件連結](https://www.ros.org/reps/rep-0138.html)）
+
+    REP-138 定義雷射掃描儀（Laser Scanner）驅動程式裡常用的 Topic、參數及診斷資訊（Diagnostic Keys）之命名建議，其中，前兩者的標準化有助於後續 ROS 2 套件與演算法直接使用；至於診斷資訊，則建議提供`Computed Latency`、`User Time Offset`、`Firmware Version`等項目資訊，利於開發者監測感測器運作狀態、確認驅動相容性及進行系統除錯。不過要特別注意，REP-138 是以光達掃描時所產生的掃描線（Scan Line）資料為基礎制定，因此主要適用於 2D 光達，至於以`sensor_msgs/PointCloud2`為主要輸出格式的 3D 光達，則可參考其命名與診斷資訊的設計原則，並非所有規範皆適用。
+
+    舉例來說，若是單回波（Single Echo）光達，意指每個掃描方向僅保留一筆量測結果，建議 Topic 為`scan`，並輸出`sensor_msgs/LaserScan`格式；若為多回波（Multi-Echo）光達，即同一個掃描方向可保留多筆回波資訊，則建議 Topic 為`echoes`，並輸出`sensor_msgs/MultiEchoLaserScan`格式。至於兩者對應的驅動程式，皆可採用同樣的參數命名方式，例如：
+    
+     - `ip_address`、`ip_port`、`serial_port`、`serial_baud`，用以設定乙太網路或序列埠通訊。
+     - `frame_id`，雷射掃描資料所使用的座標系，規範座標系原點應設於光達的光學中心（Optical Center），其中 X 軸應對應光達的 0° 掃描方向，Y 軸則對應 90° 掃描方向。
+     - `calibrate_time` 與 `time_offset` ，分別用於控制驅動程式是否在啟動時進行時間校正，以及設定感測器與系統之間的固定時間偏移量，使後續發布資料具有較準確的時間戳記（Timestamp）。
+     - `angle_min`、`angle_max`、`publish_intensity`、`publish_multiecho`，則是用於設定掃描角度範圍、是否發布反射強度及是否輸出多回波資料。
+
+* **REP-145 Conventions for IMU Sensor Drivers**（ [文件連結](https://www.ros.org/reps/rep-0145.html)）
+
+
+
 ---
 
 ## 2. 常見產品規格 — 從驅動觀察主流設計
 
-在實務上，可以透過觀察常見產品提供的官方 ROS Package 之 Launch 檔結構，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動或整合系統時可參考的內容：
+在實務上，可以透過觀察常見產品提供的官方 ROS Package 之 Launch 檔結構，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動程式或整合系統時可參考的內容：
 
 ### 案例 A：RealSense (D400系列) — 影像與深度感測器
 - **官方 Package**：`realsense2_camera`
@@ -231,4 +246,4 @@ flowchart LR
 
   ```
 
-- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動會將硬體當下的旋轉角度與探測距離，打包並發布 `sensor_msgs/msg/LaserScan`。
+- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動程式會將硬體當下的旋轉角度與探測距離，打包並發布 `sensor_msgs/msg/LaserScan`。

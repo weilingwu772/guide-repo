@@ -13,7 +13,7 @@ flowchart LR
 
         subgraph NI["原生介面"]
             direction LR
-            HI["實體介面<br/>(GMSL2、Ethernet、USB...)"]
+            HI["硬體介面<br/>(GMSL2、Ethernet、USB、UART...)"]
             CP["通訊協定<br/>(MQTT、RTSP、Modbus TCP...)"]
         end
 
@@ -96,7 +96,7 @@ flowchart LR
     - Y 軸：Left（指向機器人左方）
     - Z 軸：Up（垂直向上）
       
-  * **大地座標系**：採用 ENU (East-North-Up) 座標系
+  * **世界座標系**：採用 ENU (East-North-Up) 座標系
     - X 軸：East（東方）
     - Y 軸：North（北方）
     - Z 軸：Up（垂直向上）
@@ -112,7 +112,7 @@ flowchart LR
     3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
     4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
       
-  * **協方差矩陣表現方式**（Covariance Representation）：各種感測器的協方差矩陣必須依照固定順序排序，例如 IMU 的線性加速度協方差矩陣，採用 x、y、z 的 Row-major（以列為主） 順序儲存。
+  * **協方差矩陣表現方式**（Covariance Representation）：規範感測器資料中的協方差矩陣應採 Row-major（以列為主）的方式，各元素則依對應訊息所定義的變數順序做排列，例如位置協方差依 X、Y、Z 排列，而位姿與速度協方差則依 X、Y、Z、Roll、Pitch、Yaw 的順序排列。
 
 * **REP-105 Coordinate Frames for Mobile Platforms**（ [文件連結](https://www.ros.org/reps/rep-0105.html)）
 
@@ -149,16 +149,22 @@ flowchart LR
 
     REP-138 定義雷射掃描儀（Laser Scanner）驅動程式裡常用的 Topic、參數及診斷資訊（Diagnostic Keys）之命名建議，其中，前兩者的標準化有助於後續 ROS 2 套件與演算法直接使用；至於診斷資訊，則建議提供`Computed Latency`、`User Time Offset`、`Firmware Version`等項目資訊，利於開發者監測感測器運作狀態、確認驅動相容性及進行系統除錯。不過要特別注意，REP-138 是以光達掃描時所產生的掃描線（Scan Line）資料為基礎制定，因此主要適用於 2D 光達，至於以`sensor_msgs/PointCloud2`為主要輸出格式的 3D 光達，則可參考其命名與診斷資訊的設計原則，並非所有規範皆適用。
 
-    舉例來說，若是單回波（Single Echo）光達，意指每個掃描方向僅保留一筆量測結果，建議 Topic 為`scan`，並輸出`sensor_msgs/LaserScan`格式；若為多回波（Multi-Echo）光達，即同一個掃描方向可保留多筆回波資訊，則建議 Topic 為`echoes`，並輸出`sensor_msgs/MultiEchoLaserScan`格式。至於兩者對應的驅動程式，皆可採用同樣的參數命名方式，例如：
+    舉例來說，若是單回波（Single Echo）光達，意指每個掃描方向僅保留一筆量測結果，建議 Topic 為`scan`，並輸出`sensor_msgs/LaserScan`格式；若為多回波（Multi-Echo）光達，即同一個掃描方向可保留多筆回波資訊，則建議 Topic 為`echoes`，並輸出`sensor_msgs/MultiEchoLaserScan`格式。至於兩者對應的驅動程式之參數，皆建議採用以下命名方式：
     
      - `ip_address`、`ip_port`、`serial_port`、`serial_baud`，用以設定乙太網路或序列埠通訊。
-     - `frame_id`，雷射掃描資料所使用的座標系，規範座標系原點應設於光達的光學中心（Optical Center），其中 X 軸應對應光達的 0° 掃描方向，Y 軸則對應 90° 掃描方向。
+     - `frame_id`，用於標示每筆完整雷射掃描幀（Frame）所對應的座標框架名稱；依據 REP-138，該座標框架原點應設於光達的光學中心（Optical Center），其中 X 軸對應光達的 0° 掃描方向，Y 軸對應 90° 掃描方向。
      - `calibrate_time` 與 `time_offset` ，分別用於控制驅動程式是否在啟動時進行時間校正，以及設定感測器與系統之間的固定時間偏移量，使後續發布資料具有較準確的時間戳記（Timestamp）。
      - `angle_min`、`angle_max`、`publish_intensity`、`publish_multiecho`，則是用於設定掃描角度範圍、是否發布反射強度及是否輸出多回波資料。
 
 * **REP-145 Conventions for IMU Sensor Drivers**（ [文件連結](https://www.ros.org/reps/rep-0145.html)）
 
+    REP-145 定義慣性測量單元（IMU）驅動程式裡常用的 Topic、座標框架及資料呈現方式等，適用於加速度計（Accelerometer）、陀螺儀（Gyroscope）、磁力計（Magnetometer），以及整合上述感測器的 IMU。此外強調驅動程式應盡可能保留感測器的原始量測資料，像是濾波（Filtering）或座標轉換的處理則建議交由後續 ROS 2 節點處理，以提升資料的一致性與重複利用性。
 
+    舉例來說，REP-145 建議 IMU 驅動程式依據感測器所提供的功能，至少應發布下列其中一種 Topic。同時，每筆訊息皆應包含 `std_msgs/Header`，用於記錄資料的時間戳記及座標框架資訊，以利後續感測器同步與座標轉換：
+
+    * `imu/data_raw`，加速度與角速度的原始量測資料。   
+    * `imu/data`，除加速度與角速度資料外，亦包含以四元數（Quaternion）表示的姿態資訊。
+    * `imu/mag`，發布磁力計的磁場量測資料。
 
 ---
 

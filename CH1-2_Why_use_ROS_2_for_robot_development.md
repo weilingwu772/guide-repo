@@ -77,7 +77,7 @@ ROS 2 是目前智慧機器人系統開發中，最被廣泛使用的開源軟�
 | :--- | :--- | :--- | :--- |
 | 輪式里程計演算法 | `/odom/wheel` | `nav_msgs/msg/Odometry` | 由演算法（例如 `ros2_control` 中的`diff_drive_controller` ）根據編碼器資料，計算得到機器人位姿（位置+姿態）與速度（線速度&角速度）的數值。 |
 | `robot_localization` | `/odom` | `nav_msgs/msg/Odometry` | 融合 `/odom/wheel`、`/imu/data` 等感測器資料運算產生的里程計資訊，提供較準確的機器人位姿與速度數值，其座標原點通常為機器人啟動時建立的局部原點。 |
-| `multisensor_calibration` | `/tf` | `tf2_msgs/msg/TFMessage` | 記錄各座標系（如 `odom`、`base_link`、`laser`）之間的相對位置與姿態，用於不同感測器與機器人座標系間的轉換。 |
+| `multisensor_calibration` | `/tf` | `tf2_msgs/msg/TFMessage` | 記錄各座標系（如 `odom`、`base_link`、`laser`）之間的相對位置與姿態資訊，用於不同感測器與機器人座標系間的轉換。 |
 | SLAM 演算法/ Map Server | `/map` | `nav_msgs/msg/OccupancyGrid` | 通常為二維佔據網格地圖（Occupancy Grid），記錄環境中牆壁與障礙物的分布，作為導航的全局環境資訊。 |
 | `Costmap2D` | `/global_costmap/costmap` | `nav_msgs/msg/OccupancyGrid` | 根據 `/map` 建立全域代價地圖（Global Costmap），並對障礙物進行膨脹處理，供全局規劃器使用。 |
 | `Costmap2D` | `/local_costmap/costmap`  | `nav_msgs/msg/OccupancyGrid` | 結合 `/scan` 等即時感測器資料更新周圍障礙物資訊，供局部規劃器使用。 |

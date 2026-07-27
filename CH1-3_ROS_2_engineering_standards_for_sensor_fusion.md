@@ -65,7 +65,7 @@ flowchart LR
     * Ubuntu Jammy (22.04) 的 64 位元版本
     * Windows 10 (VS2019)
     
-    接著查看 Ubuntu 官方的 Python 版本對照表 (Available Python versions)，就能得知 Ubuntu 22.04 對應 Python 3.10 版本，也就是說，要用 Python 3.10 才能完整安裝及執行 ROS 2 Humble Hawksbill。
+    接著查看 Ubuntu 官方的 Python 版本對照表（Available Python versions），就能得知 Ubuntu 22.04 對應 Python 3.10 版本，也就是說，要用 Python 3.10 才能完整安裝及執行 ROS 2 Humble Hawksbill。
 
 ### 1.2. 統一物理量標準
 
@@ -75,7 +75,7 @@ flowchart LR
 
   REP-103 定義 ROS 中的單位與座標系，確保不同軟體在處理物理量時能保持一致，避免因單位不同導致的計算錯誤。各項目規範如下：
 
-  * **度量單位**：全面使用國際單位制 (International System of Units，簡稱SI)
+  * **度量單位**：全面使用國際單位制（International System of Units，簡稱SI）
 
     | 物理量                    | 單位           |
     | --------------------- | ----------------- |
@@ -86,17 +86,17 @@ flowchart LR
     | 角度（Angle）             | radian         |
     | 頻率（Frequency）         | hertz          |
     | 力（Force）               | newton         |
-    | 功率（power）             | watt           |
-    | 電壓（voltage）           | volt           |
-    | 溫度（temperature）       | celsius        |
-    | 磁場（magnetism）         | tesla          |
+    | 功率（Power）             | watt           |
+    | 電壓（Voltage）           | volt           |
+    | 溫度（Temperature）       | celsius        |
+    | 磁場（Magnetism）         | tesla          |
 
-  * **座標系**：採用右手座標系 (Right-Handed Coordinate System)
+  * **座標系**：採用右手座標系（Right-Handed Coordinate System）
     - X 軸：Forward（指向機器人前方）
     - Y 軸：Left（指向機器人左方）
     - Z 軸：Up（垂直向上）
       
-  * **世界座標系**：採用 ENU (East-North-Up) 座標系
+  * **世界座標系**：採用 ENU（East-North-Up）座標系
     - X 軸：East（東方）
     - Y 軸：North（北方）
     - Z 軸：Up（垂直向上）
@@ -131,7 +131,7 @@ flowchart LR
 
 * **REP-117 Informational Distance Measurements**（ [文件連結](https://www.ros.org/reps/rep-0117.html)）
 
-    REP-117 規範 ROS 與 PCL (Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫)中，物理距離(Physical Distance)測量值的表示方式，此規範適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+    REP-117 規範 ROS 與 PCL（Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫）中，物理距離（Physical Distance）測量值的表示方式，適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
     
     舉例來說，傳統開發可能會使用自訂數值，來表示超出量測範圍或量測異常，這種資料語意的不一致，容易導致演算法解讀錯誤，進而造成機器人緊急煞車或路徑規劃出錯，故建議遵循 REP-117 以下形式：
     

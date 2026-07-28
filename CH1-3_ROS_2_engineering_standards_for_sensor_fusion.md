@@ -1,4 +1,4 @@
-# 多感測器融合的 ROS 2 工程規範 (ROS 2 engineering standards for sensor fusion)
+# 感知工程規範 (ROS 2 engineering standards for sensor fusion)
 
 進一步探究機器人感知系統的開發流程，會發現實務上最令人頭痛的往往不是演算法本身，而是各個感測器介面與資料表示方式的不一致，不同感測器通常具有各自的原生介面（Native Interface），其實體介面、通訊協定、資料格式與操作流程，往往由硬體製造商依據自身產品路線而設計，為協助開發者存取與控制硬體，原廠通常也會提供相應的軟體支援，例如感測器的 SDK（Software Development Kit，軟體開發工具包）、工業電腦的 BSP（Board Support Package，板級支援套件）等，裡面包含原廠已處理的程式碼、函式庫、使用說明文件或範例檔，使開發者能夠取得感測器原始資料，或呼叫硬體所提供的特定功能。
 

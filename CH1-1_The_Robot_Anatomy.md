@@ -76,19 +76,19 @@ graph LR
 ## 【感知】機器人的視線範圍
 
 - **國際主流廠**：
-  - **RGB相機**：Basler(德/DE)、Teledyne(美/US)、e-con Systems(印/IN)、海康機器人(中/CN)、Leopard Imaging(美/US)
+  - **RGB相機**：海康機器人(中/CN)、Teledyne(美/US)、Basler(德/DE)、e-con Systems(印/IN)、Leopard Imaging(美/US)
   - **深度相機**：RealSense(美/US)、奧比中光(中/CN)、Stereolabs(美/US)
   - **全景相機**：影石科技(中/CN)
-  - **2D / 3D 光達（LiDAR）**：思嵐科技(中/CN)、SICK(德/DE)、禾賽科技(中/CN)、速騰聚創(中/CN)
+  - **2D / 3D 光達**：思嵐科技(中/CN)、SICK(德/DE)、禾賽科技(中/CN)、速騰聚創(中/CN)
   - **超音波 / 紅外線**：Teledyne FLIR(美/US)、睿創微納(中/CN)
-  - **雷達(RADAR) / 毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
+  - **雷達 / 毫米波**：Bosch(德/DE)、Continental(德/DE)、Valeo(法/FR)
   - **MEMS 麥克風**：歌爾股份(中/CN)、Knowles(美/US)、瑞聲科技(中/CN)、Infineon Technologies(德/DE)
   - **電子皮膚**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)
   - **一維力感測**：Sensata(美/US)、Futek(美/US)
   - **三維 / 六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
   - **GNSS / RTK**：u-blox(瑞/CH)、STMicroelectronics(瑞/CH)
   - **慣性測量單元 (IMU)** ：ADI(美/US)、Bosch(德/DE)
-  - **編碼器（Encoder）**：Renishaw(英/UK)、Celera Motion(美/US)
+  - **編碼器**：Renishaw(英/UK)、Celera Motion(美/US)
 
 - **台灣供應商**：
 
@@ -152,7 +152,7 @@ graph TD
   - **減速機**：Harmonic Drive Systems(日/JP)、綠的諧波(中/CN)、Nidec Shimpo(日/JP)、Nabtesco(日/JP)、雙環傳動(中/CN)、Wittenstein(德/DE)、Neugart(德/DE)
   - **馬達**：Kollmorgen(美/US)、BEI Kimco(美/US)、Maxon(瑞/CH)、
   Nidec(日/JP)、YASKAWA(日/JP)、DYNAMIXEL(韓/KR)
-  - **滾柱螺桿**：NSK(日/JP)、THK(日/JP)、Schaeffler(德/DE)
+  - **行星滾柱螺桿**：NSK(日/JP)、THK(日/JP)、Schaeffler(德/DE)
   - **末端執行器**：靈心巧手(中/CN)、Festo(德/DE)、SCHUNK(德/DE)、因時機器人(中/CN)
   
 - **台灣供應商**：

@@ -63,13 +63,13 @@ ROS 2 是目前智慧機器人系統開發中，最被廣泛使用的開源軟�
 
 | 感測器 | Topic | Message  | 說明 |
 | :--- | :--- | :--- | :--- |
-| 2D 光達 (LiDAR) | `/scan` | `sensor_msgs/msg/LaserScan` | 提供二維掃描資料，包含在同一平面內各角度的障礙物距離量測值。 |
-| 3D 光達 (LiDAR) | `/points_raw` 或 `/points2` | `sensor_msgs/msg/PointCloud2` | 提供三維點雲資料，每個點通常包含 X、Y、Z 座標。 |
+| 2D 光達 | `/scan` | `sensor_msgs/msg/LaserScan` | 提供二維掃描資料，包含在同一平面內各角度的障礙物距離量測值。 |
+| 3D 光達 | `/points_raw` 或 `/points2` | `sensor_msgs/msg/PointCloud2` | 提供三維點雲資料，每個點通常包含 X、Y、Z 座標。 |
 | RGB 相機 | `/camera/rgb/image_raw` | `sensor_msgs/msg/Image` | 提供二維彩色影像，每個像素只包含顏色資訊。 |
-| RGB-D 深度相機 | `/camera/color/image_raw`<br>`/camera/depth/image_raw` | `sensor_msgs/msg/Image` | 提供彩色影像與深度影像，其中深度影像的每個像素值代表目標物與相機間的距離。 |
+| 深度相機 | `/camera/color/image_raw`<br>`/camera/depth/image_raw` | `sensor_msgs/msg/Image` | 提供彩色影像與深度影像，其中深度影像的每個像素值代表目標物與相機間的距離。 |
 | 左、右相機 | `/camera/left/image_raw`<br>`/camera/right/image_raw` | `sensor_msgs/msg/Image` | 提供左、右相機的原始影像，可由整合式雙目相機直接輸出，亦可由兩顆獨立相機分別發布左相機原始影像和右相機原始影像。 |
 | 慣性測量單元 (IMU) | `/imu/data_raw`<br> `/imu/data` | `sensor_msgs/msg/Imu` | 提供高頻率的加速度和角速度數據，`/imu/data_raw` 為原始量測數據，若驅動程式支援姿態融合，則會提供包含姿態資訊的 `/imu/data`。 |
-| GPS / GNSS 接收器 | `/gps/fix` | `sensor_msgs/msg/NavSatFix` | 提供經緯度與海拔等全球定位資訊。 |
+| GNSS 接收器 | `/gps/fix` | `sensor_msgs/msg/NavSatFix` | 提供經緯度與海拔等全球定位資訊。 |
 
 #### 計算數據 (computed data) — 需經計算才能得到
 
@@ -78,11 +78,11 @@ ROS 2 是目前智慧機器人系統開發中，最被廣泛使用的開源軟�
 | 輪式里程計演算法 | `/odom/wheel` | `nav_msgs/msg/Odometry` | 由演算法（例如 `ros2_control` 中的`diff_drive_controller` ）根據編碼器資料，計算得到機器人位姿（位置+姿態）與速度（線速度&角速度）的數值。 |
 | `robot_localization` | `/odom` | `nav_msgs/msg/Odometry` | 融合 `/odom/wheel`、`/imu/data` 等感測器資料運算產生的里程計資訊，提供較準確的機器人位姿與速度數值，其座標原點通常為機器人啟動時建立的局部原點。 |
 | `multisensor_calibration` | `/tf` | `tf2_msgs/msg/TFMessage` | 記錄各座標系（如 `odom`、`base_link`、`laser`）之間的相對位置與姿態資訊，用於不同感測器與機器人座標系間的轉換。 |
-| SLAM 演算法/ Map Server | `/map` | `nav_msgs/msg/OccupancyGrid` | 通常為二維佔據網格地圖（Occupancy Grid），記錄環境中牆壁與障礙物的分布，作為導航的全局環境資訊。 |
-| `Costmap2D` | `/global_costmap/costmap` | `nav_msgs/msg/OccupancyGrid` | 根據 `/map` 建立全域代價地圖（Global Costmap），並對障礙物進行膨脹處理，供全局規劃器使用。 |
-| `Costmap2D` | `/local_costmap/costmap`  | `nav_msgs/msg/OccupancyGrid` | 結合 `/scan` 等即時感測器資料更新周圍障礙物資訊，供局部規劃器使用。 |
+| SLAM 演算法/ Map Server | `/map` | `nav_msgs/msg/OccupancyGrid` | 通常為二維佔據網格地圖（Occupancy Grid），記錄環境中牆壁與障礙物的分布，作為導航上的環境資訊。 |
+| `Costmap2D` | `/global_costmap/costmap` | `nav_msgs/msg/OccupancyGrid` | 根據 `/map` 建立全域代價地圖（Global Costmap），並對障礙物進行膨脹處理，供全域規劃器（Global Planner）使用。 |
+| `Costmap2D` | `/local_costmap/costmap`  | `nav_msgs/msg/OccupancyGrid` | 結合 `/scan` 等即時感測器資料更新周圍障礙物資訊，供局部規劃器（Local Planner）使用。 |
 | 外部指令 | `/goal_pose` | `geometry_msgs/msg/PoseStamped` | 透過介面（如 RViz2）發布包含目標位置與最終姿態（朝向）的導航目標，供導航系統規劃路徑。 |
-| 全局規劃器 | `/plan` | `nav_msgs/msg/Path` | 由機器人目前位置規劃至 `/goal_pose` 的路徑點序列，供導航系統作為整體行進路徑。 |
+| 全域規劃器 | `/plan` | `nav_msgs/msg/Path` | 由機器人目前位置規劃至 `/goal_pose` 的路徑點序列，供導航系統作為整體行進路徑。 |
 
 ---
 

@@ -22,7 +22,7 @@
 
 | 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 產出 Message |
 | :--- | :--- | :--- | :--- |
-| **AMCL**<br>*(Monte Carlo Localization)* | **說明**：基於粒子濾波器架構，ROS 導航內建的經典定位法。<br><br>**優點**：<br>1. 在地圖中灑出大量「可能位置的粒子」，透過光達掃描與地圖的比對，逐步收斂到唯一正確的位置<br>2. 計算資源消耗低，但非常依賴環境特徵<br><br>**缺點**：<br>1. 必須在有現成地圖的情況下才能運作<br>2. 若環境變動太大時（例如預設的地圖是空的，但現實中被貨物堆滿）就容易失準 | • `/map` (可自建也可匯入的靜態黑白地圖)<br>• 2D 光達 ➔ `/scan`<br>• `/tf` | • `geometry_msgs/PoseWithCovarianceStamped`<br>• `geometry_msgs/PoseArray`<br>• `tf2_msgs/TFMessage` |
+| **AMCL**<br>*(Adaptive Monte Carlo Localization)* | **說明**：基於粒子濾波器架構，是 MCL 自適應版本，也是 ROS 導航內建的經典定位法。<br><br>**優點**：<br>1. 在地圖中灑出大量「可能位置的粒子」，透過光達掃描與地圖的比對，逐步收斂到唯一正確的位置<br>2. 相較 SLAM 演算法，計算資源消耗低，但非常依賴環境特徵<br><br>**缺點**：<br>1. 必須在有現成地圖的情況下才能運作<br>2. 若環境變動太大時（例如預設的地圖是空的，但現實中被貨物堆滿）就容易失準 | • `/map` (可自建也可匯入的靜態黑白地圖)<br>• 2D 光達 ➔ `/scan`<br>• `/tf` | • `geometry_msgs/PoseWithCovarianceStamped`<br>• `geometry_msgs/PoseArray`<br>• `tf2_msgs/TFMessage` |
 | **robot_localization** | **說明**：基於卡爾曼濾波（Kalman Filter）架構的狀態估計（State Estimation）套件，負責融合多種感測器資訊並輸出機器人姿態與里程計資訊（`/odom`）。<br><br>**優點**：<br>1. 支援輪速計、IMU、GPS、視覺里程計等多種感測器<br>2. 可降低單一感測器的雜訊與漂移，提高定位穩定性<br><br>**缺點**：<br>1. 僅負責感測器融合與狀態估計，不具備建圖功能<br>2. 融合效果高度依賴感測器品質與參數設定 | • 編碼器 ➔ `/odom/wheel`<br>• IMU ➔ `/imu/data`<br>• GPS ➔ `/gps/fix` (選配，改善全域漂移，室內不適用) | • `geometry_msgs/msg/TransformStamped` |
 
 ## 4. 導航與避障 (Navigation & Obstacle Avoidance)

@@ -85,7 +85,7 @@ graph LR
   - **MEMS 麥克風**：歌爾股份(中/CN)、Knowles(美/US)、瑞聲科技(中/CN)、Infineon Technologies(德/DE)
   - **電子皮膚**：Tekscan(美/US)、SynTouch(美/US)、Novasentis(美/US)、漢威科技(中/CN)、JDI(日/JP)
   - **一維力感測**：Sensata(美/US)、Futek(美/US)
-  - **三維 / 六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
+  - **三維/六維力感測器**：ATI Industrial Automation(美/US)、宇立儀器(中/CN)
   - **GNSS / RTK**：u-blox(瑞/CH)、STMicroelectronics(瑞/CH)
   - **慣性測量單元 (IMU)** ：ADI(美/US)、Bosch(德/DE)
   - **編碼器**：Renishaw(英/UK)、Celera Motion(美/US)

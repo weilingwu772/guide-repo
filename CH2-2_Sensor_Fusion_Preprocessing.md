@@ -1,36 +1,66 @@
 # 融合前處理 (Sensor Fusion Preprocessing)
 
-•	空間校準 Extrinsic Calibration：機器人於設計時會有很多感測器（如光學雷達、深度相機、慣性測量單元、輪軸編碼器等），每個感測器蒐集到的資料都是「以自己為中心（自己的座標系）」發布的。如果沒有對各感測器進行精確的空間校準，雷達看到的牆壁、相機看到的障礙物、IMU 量測到的加速度就會「對不齊」，導致建圖模糊、避障失效或定位飄移。故，空間校準的主要的目的為讓機器人知道各個感測器與機構組件，在三維空間中「相對的精確位置與姿態」。
-o	空間校準的核心目的，是估算各感測器與機器人本體之間的相對位姿，並建立正確的座標轉換關係（TF Tree），在 ROS 2 中，空間校準的核心成果最終會落實為 tf2 座標變換系（Transform Library） 中的靜態變換（static_transform_publisher）或 URDF 機器人模型檔中的 <joint> 參數。
-o	常見作法：空間校準依據感測器的種類不同，使用的數學原理與校準工具也有所差異，較常見的情境與做法如下說明：
-	多雷達/雷達對車體（LiDAR-to-Body / Multi-LiDAR Calibration）：為了建立 LiDAR 與機器人本體座標系（base_link）之間的相對位姿，或建立多顆 LiDAR 之間的相對位姿，以融合其量測資料並消除單顆 LiDAR 的視野死角，需進行 LiDAR 外部參數校正（Extrinsic Calibration）。
-•	機構安裝校正：依據 CAD 設計尺寸，搭配安裝治具或高精度雷射水平儀，手動或半自動調整 LiDAR 的安裝位置（X, Y, Z）及姿態（Roll、Pitch、Yaw），使其符合設計規格。
-•	標靶式校正（Target-based Calibration）：利用已知幾何位置的校準治具（Calibration Fixture）或人工標靶（如 V Landmark），建立 Ground Truth，透過感測器量測結果與標靶真實位置的差異，估算 LiDAR 與機器人本體之間的外部參數。此方法不依賴機器人運動或里程計精度，適合現場快速校正。
-•	環境特徵匹配（ICP 法）：利用不同 LiDAR 對相同環境所掃描的重疊點雲，透過迭代最近點演算法（ICP, Iterative Closest Point）進行點雲配準（Registration），反覆估算兩組點雲之間的最佳剛體變換（Rigid Transformation），以求得多顆 LiDAR 之間的相對外部參數（Extrinsic Parameters）。
-	雷達與 IMU（LiDAR-IMU Calibration）：估算 LiDAR 與 IMU 之間的外部參數（平移與旋轉）及時間同步偏移，使兩種感測器的量測能對齊至相同座標系與時間軸，以提升 LiDAR-Inertial Odometry、SLAM 與定位的精度。
-•	手持/移動運動校準：讓機器人或手持設備執行多方向的旋轉與平移運動，收集 LiDAR（或相機）與 IMU 的同步量測資料，透過聯合最佳化估算兩者之間的外部參數及時間同步偏移。
-校準類型	常見開源工具 / 套件	說明
-LiDAR 到 IMU	LI-Calib / FAST-LIO-CALIB	自動化估算 LiDAR 與 IMU 之間的高精度旋轉矩陣與平移量。
-多LiDAR校準	multi_lidar_calibration	車用/大型機器人多雷達點雲拼接校準。
+多感測器資料融合的前提，是先解決空間一致性與時間一致性兩項問題。其中，空間校準（Extrinsic Calibration）負責建立各感測器之間的相對位姿，使所有量測資料能轉換至相同座標系；時間同步（Time Synchronization）則負責統一各感測器的時間基準，確保不同來源的資料代表的是同一時刻的環境狀態。唯有完成這兩項前置作業，才能有效避免因座標偏移或時間延遲所造成的資料不一致，進而提升多感測器資料融合、定位、建圖、避障及自主導航等應用的可靠性與精度。
 
-•	時間校準 Time Synchronization：機器人身上的各個感測器在蒐集資料時，各自都有獨立的採樣頻率與時鐘系統。如果沒有對各感測器進行精確的時間校準，當機器人處於移動狀態時，就會因為「時間對不上」而產生數據時間差，會導致感測器融合時發生嚴重的視覺殘影、空間錯位、建圖模糊或動態定位失效。故，時間校準的主要目的為讓機器人各感測器所產生的數據，在時間軸上擁有「高精度的統一基準與同步時戳」，確保所有資訊能在同一時間點被準確對齊與融合。
-o	時間同步通常分為「時間基準同步（Clock Synchronization）」與「資料時間對齊（Data Association）」：
-	時間基準同步（Clock Synchronization）
-•	PTP (Precision Time Protocol / IEEE 1588)：
-o	原理：透過乙太網路傳輸 IEEE 1588 時間同步封包，由主時鐘（Grandmaster Clock，通常為 IPC、工業交換器或 GNSS 時間伺服器）持續校正各裝置的硬體時鐘，使所有設備維持相同的時間基準。
-•	PPS 脈衝同步 (Pulse Per Second) + NMEA / Serial：
-o	原理：通常由 GNSS（GPS）接收器或時間基準設備 每秒輸出一個高精度 PPS（Pulse Per Second）脈衝，所有感測器或主機收到脈衝後，將其作為共同的時間基準來校正自身時鐘；同時透過 NMEA 或 Serial 傳送絕對時間（如 UTC 時間），讓系統知道每個 PPS 脈衝所對應的實際時間。
-•	外觸發訊號 (External Trigger / Strobe)：
-o	原理：由主控板（如 MCU 或 FPGA）輸出硬體觸發訊號（Trigger Signal），同步觸發相機曝光或 LiDAR 開始掃描，使多個感測器在同一物理時刻產生資料。
-	資料時間對齊（Data Association）：當硬體不支援 PTP 或外觸發時，可利用 ROS 2 的時間戳（Timestamp）在接收資料後，依據時間戳將不同來源的資料配對。此方式不會校正感測器時鐘，而是依據時間戳將不同來源的資料對齊，用於後續感測器融合。
-•	ExactTime (精確時間匹配)：
-o	只有當多個 Topic 的 header.stamp（時間戳）完全一模一樣時才觸發 Callback。
-o	適用：已經做過硬體同步的多相機系統。
-•	ApproximateTime (近似時間匹配)：
-o	允許設定一個時間容許值（Slop，例如 ±10ms）。演算法會在佇列（Queue）中尋找時間最接近的一組資料進行配對。
-o	適用：沒有硬體同步、各感測器採樣頻率不一致的情境（如 10Hz的LiDAR 搭配 30Hz 的 Camera）。
-•	即使感測器已完成時間同步並具有時間戳，仍可能因為曝光延遲、傳輸延遲或硬體處理延遲，使時間戳與實際資料產生時刻存在固定偏差（Time Offset），因此仍需進行時間外參校準（Temporal Calibration）：
-o	最佳化校準（Optimization-based Calibration）：
-	可透過 Kalibr（Camera–IMU）、LI-Calib（LiDAR–IMU）、FAST-LIO-CALIB（LiDAR–IMU） 等校準工具，將固定時間偏移（Time Offset）視為待估參數，並與空間外參共同進行最佳化求解，以提升感測器融合精度。
-o	動態軌跡對齊：
-	讓機器人執行具有足夠角速度與加速度變化的運動，分別計算相機或 LiDAR 推估的角速度，以及 IMU 量測的角速度，再利用互相關（Cross-Correlation）或非線性最佳化，估計兩組訊號之間的固定時間偏移量。
+## 1. 空間校準 (Extrinsic Calibration)
+
+在前文已說明外方位參數是描述感測器與機器人本體（或不同感測器之間）的相對位姿，以下則依據感測器種類、安裝位置及應用需求，進一步談外參的標定方式。
+
+### 1.1. 多雷達／雷達對車體 (Multi-LiDAR / LiDAR-to-Body Calibration)
+
+建立多顆 LiDAR 之間或與機器人本體座標系（`base_link`）的相對位姿，以融合點雲並消除視野死角。
+
+* **機構安裝校正**：依據 CAD 模型尺寸、精確安裝治具或高精度量測工具取得初始外參，必要時再進行人工微調。
+* **標靶式校正 (Target-based Calibration)**：利用已知幾何特徵的校準板或標靶（如 Checkerboard、ArUco、V-Landmark）建立 Ground Truth，透過殘差最小化估算外參。
+* **環境特徵匹配 (Targetless / ICP-based)**：利用不同 LiDAR 掃描相同環境的重疊點雲，透過 ICP（Iterative Closest Point）或 NDT 等演算法估算剛體變換。
+
+### 1.2. 雷達與慣測單元 (LiDAR-IMU Calibration)
+
+估算 LiDAR 與 IMU 之間的外參及時間偏移，以提升 LiDAR-Inertial Odometry (LIO)、SLAM 及高精度定位效能。
+
+* **運動式校準 (Kinematic Calibration)**：令機器人執行多軸旋轉與平移運動，收集同步數據後透過非線性聯合最佳化（Joint Optimization）同時估算旋轉、平移外參及時間偏移。
+
+### 1.3. 常見開源校準工具
+
+| 校準類型 | 常見開源工具 / 套件 | 說明 |
+| :--- | :--- | :--- |
+| **LiDAR 到 IMU** | `LI-Calib` / `FAST-LIO-CALIB` | 自動估算 LiDAR 與 IMU 之間的 6-DoF 外參及時間偏移 |
+| **多 LiDAR 校準** | `multi_lidar_calibration` | 進行多顆 LiDAR 點雲對齊與外參融合校正 |
+| **相機到 IMU / LiDAR** | `Kalibr` | 支援多相機、Camera-IMU 靜動態外參及 Temporal Calibration |
+
+---
+
+## 2. 時間同步 (Time Synchronization)
+
+機器人身上的各個感測器在蒐集資料時，都有各自的採樣頻率或內部時鐘（Local Clock），雖然多是以世界協調時間（Coordinated Universal Time，簡稱 UTC）為時間基準，但各裝置仍可能因時鐘漂移、傳輸延遲或硬體特性而產生時間誤差；同時，隨著系統整合的硬體數量增加、架構愈趨複雜，這些誤差也將逐漸累積，進而影響資料融合與控制精度。因此，對於追求高精度表現的人型機器人、機器狗與AMR的應用來說，時間同步已是開發上不可忽視的重要課題，故建議開發者依據系統架構與應用需求，選擇適當的時間同步機制，以建立一致且可靠的時間基準。
+
+而在討論時間同步機制前，先說明系統開發中常見的兩種時間來源：
+1. **系統時間（System Time）**：由作業系統的系統時鐘提供，通常作為系統目前的標準時間，並可對應至 UTC 時間，而系統時間是可以因人工校時向前或向後調整的。
+2. **ROS 時間（ROS Time）**：ROS 2 提供的時間機制，預設跟隨系統時間，也可切換為其他時間來源，例如當節點的`use_sim_time`設為`true`時，ROS Time 會改成`/clock` Topic 提供時間，以此在像是 Gazebo 的模擬器中模擬時間流逝。
+
+### 2.1. 單一主機且應用相對單純
+
+若在系統建置時，就已確定所有 ROS 2 節點都運行在同一台主機，且共用同一個系統時鐘，就不需要額外建立跨裝置的時間同步機制，後續可依訊息中的`header.stamp`作為時間配對（Data Association）依據，再搭配`message_filters`套件（`ExactTime`或`ApproximateTime`）完成資料對齊。
+
+* **ExactTime 精確時間匹配**：適用於時間戳高度一致的多感測器資料，或已透過其他時間同步機制建立共同時間基準的多感測器系統，當多個 Topic 的 `header.stamp` 完全一致時，才會完成資料配對並交由後續演算法處理。
+* **ApproximateTime 近似時間匹配**：允許定義可接受的時間戳差距（Slop，單位是秒，例如 0.01 代表 10 ms），同步器會在訊息佇列中尋找時間最接近的一組資料進行配對，適用於時間戳無法完全一致，或不同感測器採樣頻率不一致的情境，例如 10 Hz 光達與 30 Hz 相機的資料融合。
+
+實務操作上，若尚未確認不同感測器的時間戳是否能完全一致，可先使用 `ApproximateTime`，觀察配對成功率與實際時間差，再逐步縮小差距，當兩個 Topic 的`header.stamp`確實完全一致時，再改用`ExactTime`；最後也要提醒，`message_filters`僅負責依據時間戳進行資料配對，並不會同步各感測器的系統時鐘，若各感測器的時鐘本身存在偏差，仍需透過下述機制建立共同的時間基準，同時軟體面向的處理，仍會受到作業系統排程、通訊或網路延遲所影響，其結果往往不如硬體面向的同步。
+
+### 2.2. 採用 EtherCAT 控制網路
+
+若系統採用 EtherCAT 作為主要控制網路時，其內建的分布式時鐘（Distributed Clocks，簡稱 DC）可持續校正各 EtherCAT Slave（指支援 EtherCAT 通訊協定的裝置）之內部時鐘，使所有硬體維持一致的時間基準，並提供微秒級（通常小於 1 μs）甚至更高精度的同步能力，因此特別適合高速與即時需求的控制應用。
+
+由於 EtherCAT 的時間同步僅適用於 EtherCAT 網路內的裝置，若系統中仍包含未加入 EtherCAT 網路的感測器（例如相機或光達），則需透過其他同步方式，使其與 EtherCAT 控制系統維持一致的時間基準，常見的方式有外部觸發及 PPS 脈衝同步兩種。
+
+* **外部觸發 (Hardware Trigger)**：由主控器（如 MCU、FPGA 或其他控制器）輸出硬體觸發訊號，直接觸發相機曝光、光達掃描或其他感測器開始取樣，使多個感測器於同一物理時刻產生資料，此方式同步的是資料擷取時刻，而非各裝置的內部時鐘，但可有效降低感測器之間因曝光、掃描或取樣時機不同所造成的時間誤差。
+
+* **PPS 脈衝同步 (Pulse Per Second)**：由 GNSS 接收器每秒輸出一個高精度脈衝，各感測器收到 PPS 後即可校正自身的內部時鐘，同時搭配 NMEA 0183 通訊協定內的資料格式傳送 UTC 時間，使 EtherCAT 控制系統知道每個 PPS 脈衝所代表的實際時間。
+
+### 2.3. 多台主機或多機協作
+
+若系統由多台主機或多個透過 Ethernet 連線的裝置共同運作，且需要建立跨裝置的共同時間基準時，通常會採用 **PTP 精確時間協定 （Precision Time Protocol）**，主要透過乙太網路傳輸 IEEE 1588 時間同步封包，並由主時鐘（Grandmaster Clock）持續校正各裝置的內部時鐘，若硬體本身支援硬體時間戳（Hardware Timestamp），或藉由加裝時間同步卡（Time Synchronization Card）提供硬體時間戳功能，則同步精度可達微秒甚至亞微秒等級，因此廣泛應用於大型的多機協作或分散式系統。
+
+同時近年來，時效性網路（Time-Sensitive Networking，簡稱 TSN）也隨之逐漸成為工業應用主流，這是建立於 Ethernet 上的一系列 IEEE 標準，它利用 PTP 建立共同時間，再透過流量排程與傳輸優先權等機制，讓重要的控制封包能在預定時間內送達，而不受其他大量網路流量影響，在時間同步基礎上進一步提供低延遲、高可靠性與確定性的網路傳輸功能。
+
+以上述方法進行時間同步處理，已能讓大多數機器人系統滿足多感測器資料融合需求；然而，若應用需求對時間精度要求極高，想盡可能補償感測器因曝光或傳輸等延遲所造成的固定時間偏移（Time Offset），則可利用 `Kalibr`、`LI-Calib` 等工具進行時間外參校正，將時間偏移與空間外參一併估測，以進一步提升感測器融合精度，不過，此類校正需要大量資料與穩定環境，且其適用性會受到感測器特性的限制，因此主要應用於研究或高精度定位，在一般機器人系統整合中並非必要流程。

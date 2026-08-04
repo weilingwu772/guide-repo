@@ -3,6 +3,7 @@
 當開發者選用相機、光達、控制器或零組件時，原廠通常會提供其支援的原生介面，主要包含**硬體介面**與**通訊協定**兩個層面，簡單來說：
 - 插什麼線？ → 硬體介面 Hardware Interface
 - 資料如何交換？ → 通訊協定 Communication Protocol
+
 因此，了解兩者差異，以及背後對應的介面規格和通訊方式，將有助於開發者選擇合適的零組件，並有效率地建立穩定且具擴充性的系統架構。
 
 ## 1. 硬體介面（Hardware Interfaces）
@@ -44,6 +45,7 @@
 | **NMEA 0183**<br>*(National Marine Electronics Association 0183)* | `Positioning Devices` | UART / RS-232 | GNSS 與導航設備的資料交換標準，以 ASCII 文字串列傳輸經緯度、速度、航向、時間等定位資訊 | • 讀取 GNSS / RTK 定位資訊 |
 | **CAN**<br>*(Controller Area Network)* | `Controller & Industrial Devices` | 匯流排架構 <br> (Multi-master Bus) | 基於 ISO 11898 的多主機即時通訊，因訊息仲裁、錯誤偵測、自動重傳等機制，具有高可靠性與抗干擾能力 | • 機器人本體內控制器與馬達驅動器通訊<br>• 廣泛應用於工業設備的即時通訊 |
 | **Modbus TCP** | `Controller & Industrial Devices` | Ethernet TCP/IP <br> (Client / Server) | 建立於 Ethernet 的工業通訊協定，可讀寫裝置的暫存器資料 | • 機器人與工業設備資料交換 |
+| **EtherCAT**<br>*(Ethernet for Control Automation Technology)* | `Controller & Industrial Devices` | Ethernet <br> (Master / Slave) | 建立於 Ethernet 的工業乙太網路協定，著重即時控制通訊與高精度時間同步，具低延遲、高同步的優勢 | • 機器人本體內多軸馬達控制 |
 | **SOME/IP**<br>*(Scalable service-Oriented Middleware over IP)* | `Automotive Systems` | Ethernet UDP/TCP <br> (Service-Oriented / RPC) | 建立於 Ethernet 的車載服務導向通訊協定，以 Service 為中心進行通訊，並支援服務搜尋、遠端程序呼叫及事件通知 | • 採用車載電子架構<br>• 車用電子間通訊 |
 
 ### 應用分類架構關係圖

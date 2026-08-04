@@ -116,7 +116,7 @@ flowchart LR
 
 * **REP-105 Coordinate Frames for Mobile Platforms**（ [文件連結](https://www.ros.org/reps/rep-0105.html)）
 
-    REP-105 建立移動平台的座標系命名規範，使驅動、模型及函式庫等能共享相同的座標框架，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內用機器人通常只會使用 `base_link`、`odom` 與 `map` 三個座標系，`earth` 則主要應用在戶外場景。
+    REP-105 建立移動平台的座標系命名規範，使驅動、模型及函式庫等能共享相同的座標框架，不需因不同機器人而修改程式；文件中定義了四個主要座標系：**`base_link`機器人本體座標系**、**`odom`里程計座標系**、**`map`地圖座標系** 與 **`earth`地球座標系**，彼此的關係架構如下，其中單一室內用機器人通常只會使用`base_link`、`odom`與`map`三個座標系，`earth`則主要應用在戶外場景。
 
 ```mermaid
  graph LR
@@ -143,7 +143,7 @@ flowchart LR
 
     REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、Topic，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
     
-    舉例來說，感測器應使用 `sensor_msgs/Image` 來表示深度影像，而非 `sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配 `camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
+    舉例來說，感測器應使用`sensor_msgs/Image`來表示深度影像，而非`sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配`camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
 
 * **REP-138 LaserScan Common Topics, Parameters, and Diagnostic Keys**（ [文件連結](https://www.ros.org/reps/rep-0138.html)）
 
@@ -160,7 +160,7 @@ flowchart LR
 
     REP-145 定義慣性測量單元（IMU）驅動程式裡常用的 Topic、座標框架及資料呈現方式等，適用於加速度計（Accelerometer）、陀螺儀（Gyroscope）、磁力計（Magnetometer），以及整合上述感測器的 IMU。此外強調驅動程式應盡可能保留感測器的原始量測資料，像是濾波（Filtering）或座標轉換的處理則建議交由後續 ROS 2 節點處理，以提升資料的一致性與重複利用性。
 
-    舉例來說，REP-145 建議 IMU 驅動程式依據感測器所提供的功能，至少應發布下列其中一種 Topic。同時，每筆訊息皆應包含 `std_msgs/Header`，用於記錄資料的時間戳記及座標框架資訊，以利後續感測器同步與座標轉換：
+    舉例來說，REP-145 建議 IMU 驅動程式依據感測器所提供的功能，至少應發布下列其中一種 Topic。同時，每筆訊息皆應包含`std_msgs/Header`，用於記錄資料的時間戳記及座標框架資訊，以利後續感測器同步與座標轉換：
 
     * `imu/data_raw`，加速度與角速度的原始量測資料。   
     * `imu/data`，除加速度與角速度資料外，亦包含以四元數（Quaternion）表示的姿態資訊。
@@ -209,7 +209,7 @@ flowchart LR
 
   ```
 
-- **節點 Node 觀察**：採 Driver Node 模式，原廠不建議使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature` 與 `sensor_msgs/msg/CameraInfo`。
+- **節點 Node 觀察**：採 Driver Node 模式，原廠不建議使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature`與`sensor_msgs/msg/CameraInfo`。
 
 ### 案例 B：RPLIDAR (Slamtec) — 2D 機械旋轉式光達
 - **官方 Package**：`rplidar_ros`
@@ -252,4 +252,4 @@ flowchart LR
 
   ```
 
-- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動程式會將硬體當下的旋轉角度與探測距離，打包並發布 `sensor_msgs/msg/LaserScan`。
+- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動程式會將硬體當下的旋轉角度與探測距離，打包並發布`sensor_msgs/msg/LaserScan`。

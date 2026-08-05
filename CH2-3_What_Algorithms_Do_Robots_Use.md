@@ -1,10 +1,10 @@
 # 主流演算法 (What Algorithms Do Robots Use)
 
-在智慧機器人的開發中，「感測器」負責蒐集環境與自身狀態數據，而「演算法」則是將這些龐雜數據轉換為定位、路徑規劃及控制命令等資訊，機器人自主移動中的每個階段，都依賴不同特性與架構的演算法相互配合。對開發者來說，關鍵往往不在於從頭撰寫演算法，而是精準掌握各演算法的**適用場景與既存限制**，以及對應所需的感測器硬體、輸入 Topic 和輸出 ROS 2 Message，本節將盤點目前機器人感知領域中最主流的演算法，協助開發者能依據實際應用需求，快速選擇合適的解決方案。
+在智慧機器人的開發中，「感測器」負責蒐集環境與自身狀態數據，而「演算法」則是將這些龐雜數據轉換為定位、路徑規劃及控制命令等資訊，機器人自主移動中的每個階段，都依賴不同特性與架構的演算法相互配合。對開發者來說，關鍵往往不在於從頭撰寫演算法，而是精準掌握各演算法的**適用場景與既存限制**，以及對應所需的感測器硬體、輸入 Topic 和輸出 Message，本節將盤點目前機器人感知領域中最主流的演算法，協助開發者能依據實際應用需求，快速選擇合適的解決方案。
 
 ## 1. 雷達建圖與定位 (LiDAR SLAM & Localization)
 
-| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 產出 Message |
+| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 輸出 Message |
 | :--- | :--- | :--- | :--- |
 | **Gmapping** | **說明**：基於粒子濾波器（Particle Filter）架構，是早期經典的 2D 光達建圖演算法，多用於室內小型輪式機器人（如掃地機器人）。<br><br>**優點**：<br>1. 結構簡單，計算資源消耗低<br>2. 在小範圍室內環境中，建圖精度高且具穩定性<br><br>**缺點**：<br>1. 不適合大範圍場景，累積誤差會讓地圖嚴重變形<br>2. 純光達主導，不支援 3D 建圖與 IMU 緊耦合 | • 2D / 3D 光達 ➔ `/scan` (只接收 2D 掃描數據)<br>• 編碼器 ➔ `/odom`、 `base_link`<br>•  `/tf` | • `nav_msgs/OccupancyGrid`<br>• `nav_msgs/MapMetaData`<br>• `tf2_msgs/TFMessage` |
 | **Cartographer** | **說明**：基於圖優化（Graph-based）架構，是工業界主流的 2D / 3D 光達建圖演算法，多用於工廠運行的 AGV 或 AMR 。<br><br>**優點**：<br>1. 強大閉環檢測（Loop Closure）能力，當機器人回到初始點會自動校正累積誤差<br>2. 適合大範圍與複雜的室內環境，可直接融合 IMU 數據即時校正機器人的重力方向<br><br>**缺點**：<br>1. 為了能隨時校正，計算資源消耗高<br>2. 遇到低特徵環境，容易產生誤判或建圖錯位 | • 2D 光達 ➔ `/scan` <br>• 3D 光達 ➔ `/points2` <br>• IMU ➔ `/imu`<br>• 編碼器 ➔ `/odom` (選配) | • `cartographer_ros_msgs/SubmapList`<br>• `visualization_msgs/MarkerArray`<br>• `tf2_msgs/TFMessage` |
@@ -13,21 +13,21 @@
 
 ## 2. 視覺建圖與定位 (Visual SLAM & Localization)
 
-| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 產出 Message |
+| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 輸出 Message |
 | :--- | :--- | :--- | :--- |
 | **ORB-SLAM3** | **說明**：基於特徵點法（Feature-based Method）的視覺 SLAM 主流演算法。<br><br>**優點**：<br>1. 以視覺為核心，相機與 IMU 緊耦合，可直接利用 IMU 數據即時優化定位<br>2. 在無人機、AR / VR 眼鏡、無 GPS 環境下的輕量化定位表現極佳（公分級）<br><br>**缺點**：<br>1. 遇到低光源、反光或低特徵環境，會直接丟失定位<br>2. 產出的地圖為稀疏點雲（Sparse Point Cloud），僅供定位無法直接導航 | • RGB 相機 ➔ `/camera/rgb/image_raw`<br>• 深度相機 ➔ `/camera/depth/image_raw`、<br>`/camera/left/image_raw`、<br>`/camera/right/image_raw`<br>• IMU ➔ `/imu` (必須接收原始高頻率[>100Hz]的IMU數據) | • `geometry_msgs/PoseStamped`<br>• `sensor_msgs/PointCloud2`<br>• `visualization_msgs/Marker`<br>• `tf2_msgs/msg/TFMessage` |
 | **RTAB-Map** | **說明**：基於圖優化架構，結合視覺與光達的 3D 稠密建圖演算法，以記憶體管理機制聞名。<br><br>**優點**：<br>1. 支援多種感測器，包含相機、2D / 3D光達、IMU及GPS<br>2. 可同時建立三維點雲地圖與二維佔據網格地圖，並具備強大的閉環檢測與重定位能力（Kidnapped Robot Problem）<br><br>**缺點**：<br>1. 也因支援多種感測器，導致其設定極其複雜<br>2. 隨地圖規模增加，記憶體與運算資源需求也顯著提升 | • RGB-D 相機 ➔ `/Camera/RGBD`<br>• 2D / 3D 光達 ➔ `/LiDAR` (修正視覺深度誤差)<br>• 編碼器 ➔ `/odom`<br>• IMU ➔ `/imu` | • `nav_msgs/msg/OccupancyGrid`<br>• `sensor_msgs/msg/PointCloud2`<br>• `geometry_msgs/msg/PoseWithCovarianceStamped`<br>• `tf2_msgs/msg/TFMessage` |
 
 ## 3. 定位 (Localization)
 
-| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 產出 Message |
+| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 輸出 Message |
 | :--- | :--- | :--- | :--- |
 | **AMCL**<br>*(Adaptive Monte Carlo Localization)* | **說明**：基於粒子濾波器架構，是 MCL 自適應版本，也是 ROS 導航內建的經典定位法。<br><br>**優點**：<br>1. 在地圖中灑出大量「可能位置的粒子」，透過光達掃描與地圖的比對，逐步收斂到唯一正確的位置<br>2. 相較 SLAM 演算法，計算資源消耗低，但非常依賴環境特徵<br><br>**缺點**：<br>1. 必須在有現成地圖的情況下才能運作<br>2. 若環境變動太大時（例如預設的地圖是空的，但現實中被貨物堆滿）就容易失準 | • `/map` (可自建也可匯入的靜態黑白地圖)<br>• 2D 光達 ➔ `/scan`<br>• `/tf` | • `geometry_msgs/PoseWithCovarianceStamped`<br>• `geometry_msgs/PoseArray`<br>• `tf2_msgs/TFMessage` |
 | **robot_localization** | **說明**：基於卡爾曼濾波（Kalman Filter）架構的狀態估計（State Estimation）套件，負責融合多種感測器資訊並輸出機器人姿態與里程計資訊（`/odom`）。<br><br>**優點**：<br>1. 支援輪速計、IMU、GPS、視覺里程計等多種感測器<br>2. 可降低單一感測器的雜訊與漂移，提高定位穩定性<br><br>**缺點**：<br>1. 僅負責感測器融合與狀態估計，不具備建圖功能<br>2. 融合效果高度依賴感測器品質與參數設定 | • 編碼器 ➔ `/odom/wheel`<br>• IMU ➔ `/imu/data`<br>• GPS ➔ `/gps/fix` (選配，改善全域漂移，室內不適用) | • `geometry_msgs/msg/TransformStamped` |
 
 ## 4. 導航與避障 (Navigation & Obstacle Avoidance)
 
-| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 產出 Message |
+| 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 輸出 Message |
 | :--- | :--- | :--- | :--- |
 | **A* (A-Star) / NavFn***<br>*(全域規劃)* | **說明**：ROS 2 (Nav2) 常用的全域規劃器，屬啟發式圖形搜尋（Heuristic Search）方法。<br><br>**優點**：<br>1. 將地圖視為網格，以幾何距離加上預估成本，在毫秒內找出最短路徑<br>2. 邏輯簡單、執行穩定<br><br>**缺點**：<br>1. 網格規劃使路線較生硬（直角多）<br>2. 地圖太大時，搜尋會變慢 | • `/goal_pose`<br>• `/global_costmap/costmap`<br>• `/tf` | • `nav_msgs/msg/Path` |
 | **Theta* / Smac Planner**<br>*(全域規劃)* | **說明**：ROS 2 (Nav2) 常用的全域規劃器。<br><br>**優點**：<br>1. 打破網格限制，允許機器人規劃出任意角度的平滑斜線，更符合實際物理車輛的行駛軌跡<br>2. 產出的路徑較為平順，可減少額外平滑處理需求<br><br>**缺點**：<br>1. 運算複雜度比傳統 A* 高，並需要較好的處理器<br>2. 在障礙物密集或高解析度地圖下，規劃時間可能增加 | • `/goal_pose`<br>• `/global_costmap/costmap`<br>• `/tf` | • `nav_msgs/msg/Path` |

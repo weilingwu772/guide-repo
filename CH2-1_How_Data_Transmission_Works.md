@@ -16,7 +16,7 @@
 | **GMSL2**<br>*(Gigabit Multimedia Serial Link 2)* | 6 Gbps <br> < 15 m | 高解析 Raw 影像、三維點雲資料、控制訊號 | 單一同軸纜線可同時傳輸高速影像、控制訊號與 PoC（Power over Coax）供電，具長距離、高頻寬及抗干擾等優勢 | • RGB 相機（車用等級）<br>• 全景相機<br>• 3D 光達 |
 | **Ethernet** | 1 Gbps - 10 Gbps <br> ≤ 100 m | 影像串流、點雲、控制封包、IP 網路資料 | 目前最普遍的有線乙太網路介面，不僅可作為一般網路通訊，也能直接連接高速感測器，具高頻寬、長距離、標準化網路架構等優勢，並支援 PoE （Power over Ethernet）供電 | • 3D 光達<br>• RGB 相機<br>• 邊緣運算平台 |
 | **USB 3.0** | 5 Gbps <br> < 3 m | RGB 影像、深度影像、點雲、批次資料 | 機器人開發中最常見的高速介面，即插即用（Plug & Play），支援熱插拔並可同時提供 5V 供電 | • 深度相機<br>• RGB 相機<br>• 邊緣運算平台 |
-| **UART**<br>*(Universal Asynchronous Receiver/Transmitter)* | 9.6 kbps - 921.6 kbps <br>（部分可達數個 Mbps）<br> < 2 m | ASCII 字串、二進位序列資料 | 最常見的非同步序列通訊介面，具架構簡單、成本低等優勢 | • GNSS / RTK<br>• IMU<br>• 2D 光達 |
+| **UART**<br>*(Universal Asynchronous Receiver/Transmitter)* | 9.6 kbps - 921.6 kbps <br>（部分可達數個 Mbps）<br> < 2 m | ASCII 字串、二進位序列資料 | 最常見的非同步序列通訊介面，採用點對點傳輸方式，通常只需設定鮑率（Baud Rate）即可進行資料交換，具有架構簡單、成本低、易於嵌入式系統整合等優勢 | • GNSS / RTK<br>• IMU<br>• 2D 光達 |
 | **RS-232** | 115.2 kbps <br> < 15 m | ASCII 字串、控制命令、序列資料 | 傳統短距離點對點傳輸，常見於工業設備 | • 2D 光達<br>• 控制器 (舊型) |
 | **RS-485** | 10 Mbps <br> < 1200 m | Modbus RTU、控制封包、力/力矩感測資料 | 差動訊號傳輸，具長距離、抗干擾等優勢 | • 控制器<br>• 三維/六維力感測器<br>• 末端執行器 |
 

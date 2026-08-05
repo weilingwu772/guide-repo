@@ -236,7 +236,7 @@ flowchart LR
           'serial_port': '/dev/vendor_lidar',
           # 建議帶入 udev 綁定後的固定設備名稱
           'serial_baudrate': 115200,
-          # 實體 UART 的鮑率 (Baud rate)
+          # 實體 UART 的鮑率
           'frame_id': 'laser_frame',      
           # 該光達數據在 TF 樹中的座標系名稱
           'inverted': False,

@@ -44,6 +44,7 @@
 | **UDP**<br>*(User Datagram Protocol)* | `Network Communication` | 非連接傳輸 | 提供無連線、低延遲的資料傳輸方式，不保證封包送達或傳輸順序，因此傳輸效率高 | • 即時性要求高且允許少量丟包的應用，如 3D 光達的點雲資料傳輸 |
 | **NMEA 0183**<br>*(National Marine Electronics Association 0183)* | `Positioning Devices` | UART / RS-232 | GNSS 與導航設備的資料交換標準，以 ASCII 文字串列傳輸經緯度、速度、航向、時間等定位資訊 | • 讀取 GNSS / RTK 定位資訊 |
 | **CAN**<br>*(Controller Area Network)* | `Controller & Industrial Devices` | 匯流排架構 <br> (Multi-master Bus) | 基於 ISO 11898 的多主機即時通訊，因訊息仲裁、錯誤偵測、自動重傳等機制，具有高可靠性與抗干擾能力 | • 機器人本體內控制器與馬達驅動器通訊<br>• 廣泛應用於工業設備的即時通訊 |
+| **CAN FD**<br>*(CAN with Flexible Data-Rate)* | `Controller & Industrial Devices`<br>`Automotive Systems` | 匯流排架構 <br> (Multi-master Bus) | CAN 的擴充版本，維持相同的仲裁機制，但將每個資料框的資料長度提升至 64 Bytes（傳統 CAN 最多為 8 Bytes），同時允許資料階段採用更高的傳輸速率 | • 機器人本體內控制器與馬達驅動器通訊<br>• AMR 底盤控制<br>• 採用車載電子架構 |
 | **Modbus TCP** | `Controller & Industrial Devices` | Ethernet TCP/IP <br> (Client / Server) | 建立於 Ethernet 的工業通訊協定，可讀寫裝置的暫存器資料 | • 機器人與工業設備資料交換 |
 | **EtherCAT**<br>*(Ethernet for Control Automation Technology)* | `Controller & Industrial Devices` | Ethernet <br> (Master / Slave) | 建立於 Ethernet 的工業乙太網路協定，著重即時控制通訊與高精度時間同步，具低延遲、高同步的優勢 | • 機器人本體內多軸馬達控制 |
 | **SOME/IP**<br>*(Scalable service-Oriented Middleware over IP)* | `Automotive Systems` | Ethernet UDP/TCP <br> (Service-Oriented / RPC) | 建立於 Ethernet 的車載服務導向通訊協定，以 Service 為中心進行通訊，並支援服務搜尋、遠端程序呼叫及事件通知 | • 採用車載電子架構<br>• 車用電子間通訊 |

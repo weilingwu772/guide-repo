@@ -45,9 +45,9 @@ ROS 2 是目前智慧機器人系統開發中，最被廣泛使用的開源軟�
 
 * **第四步：參數確認**
 
-    硬體安裝完成後，即須確認感測器參數並視需求進行校正（Calibration）。以智慧機器人常用的深度相機為例，需要確認的參數有兩項：
+    硬體安裝完成後，即須確認感測器參數並視需求進行校正（Calibration）。以智慧機器人常用的相機為例，需要確認的參數有兩項：
   *   **內方位參數（Intrinsics / Intrinsic Parameter）**：簡稱內參，描述相機內部特性，包含焦距（Focal Length）、像主點（Principal Point）及畸變（Distortion）等參數，通常這些參數已由相機供應商於出廠時完成校正，即使是多相機視覺模組（例如雙目相機或以結構光技術為基礎的深度相機）因多個成像模組而具有多組內參，開發者都可直接透過相機驅動程式發布的 Topic `/camera/camera_info`（ Message：`sensor_msgs/msg/CameraInfo`），取得對應影像串流的一組內參；除非遇到更換鏡頭、使用無出廠校正的相機產品，或其他可能改變相機本身成像模組的情形，才需進行內參校正，以修正相機本身光學誤差，這時可利用 ROS 2 官方提供的`camera_calibration`套件進行處理。
-  *   **外方位參數（Extrinsics / Extrinsic Parameter）**：簡稱外參，描述相機座標系與機器人本體（或其他感測器）座標系之間的相對位置與姿態，亦即兩個座標系之間的平移（Translation）與旋轉（Rotation）關係，是機器人感知系統中必要資訊，而外參會隨著相機安裝位置不同而有標定方式上的差異；若相機裝於機器人本體內（即相機座標系與`base_link`保持固定關係），可透過像是 `Kalibr`工具或 ROS 2 的`multisensor_calibration`套件完成標定，但若相機是裝在末端執行器（例如夾爪）或其他可動式機構（能左右轉動的頭部等），則需先進行手眼協調（Hand-Eye Calibration）技術處理，例如藉由 ROS 2 的 MoveIt 2 之`moveit_calibration`套件，建立相機與其所安裝機構之間的固定座標轉換關係。待外參標定後，則建議將結果寫進機器人描述檔（URDF）中，並由 `robot_state_publisher` 發布至 Topic `/tf` （ Message：`tf2_msgs/msg/TFMessage`），以方便後續演算法使用。
+  *   **外方位參數（Extrinsics / Extrinsic Parameter）**：簡稱外參，描述相機座標系與機器人本體（或其他感測器）座標系之間的相對位置與姿態，亦即兩個座標系之間的平移（Translation）與旋轉（Rotation）關係，是機器人感知系統中必要資訊，而外參會隨著相機安裝位置不同而有標定方式上的差異，相關實務操作將於後續章節（CH 2-2）說明。
 
 * **第五步：資料前處理**
 

@@ -1,7 +1,8 @@
 # 主流演算法 (What Algorithms Do Robots Use)
 
 在智慧機器人的開發中，「感測器」負責蒐集環境與自身狀態數據，而「演算法」則是將這些龐雜數據轉換為定位、路徑規劃及控制命令等資訊，機器人自主移動中的每個階段，都依賴不同特性與架構的演算法相互配合。對開發者來說，關鍵往往不在於從頭撰寫演算法，而是精準掌握各演算法的**適用場景與既存限制**，以及對應所需的感測器硬體、輸入 Topic 和輸出 Message，本節將盤點目前機器人感知領域中最主流的演算法，協助開發者能依據實際應用需求，快速選擇合適的解決方案。
-<p align="center"><img src="./images/algorithm_quadrant_matrix.jpg" style="width:600px" /></p>
+
+<p align="center"><img src="./images/algorithm_quadrant_matrix.jpg" style="width:700px" /></p>
 
 ## 1. 雷達建圖與定位 (LiDAR SLAM & Localization)
 

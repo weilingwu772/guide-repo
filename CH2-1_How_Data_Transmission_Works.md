@@ -6,8 +6,7 @@
 
 因此，了解兩者差異，以及背後對應的介面規格和通訊方式，將有助於開發者選擇合適的零組件，並有效率地建立穩定且具擴充性的系統架構。
 
-【待畫圖】預計架構如下
-<!-- ![機器人通訊介面與協定架構圖](./images/data_transmission_architecture.jpg) -->
+【待畫圖】架構示意如下
 <p align="center"><img src="./images/data_transmission_architecture.jpg" style="width:500px" ></p>
 
 ## 1. 硬體介面（Hardware Interfaces）

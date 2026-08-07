@@ -1,6 +1,7 @@
 # 主流演算法 (What Algorithms Do Robots Use)
 
 在智慧機器人的開發中，「感測器」負責蒐集環境與自身狀態數據，而「演算法」則是將這些龐雜數據轉換為定位、路徑規劃及控制命令等資訊，機器人自主移動中的每個階段，都依賴不同特性與架構的演算法相互配合。對開發者來說，關鍵往往不在於從頭撰寫演算法，而是精準掌握各演算法的**適用場景與既存限制**，以及對應所需的感測器硬體、輸入 Topic 和輸出 Message，本節將盤點目前機器人感知領域中最主流的演算法，協助開發者能依據實際應用需求，快速選擇合適的解決方案。
+<p align="center"><img src="./images/algorithm_quadrant_matrix.jpg" style="width:600px" /></p>
 
 ## 1. 雷達建圖與定位 (LiDAR SLAM & Localization)
 
@@ -29,7 +30,7 @@
 
 | 演算法 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 輸出 Message |
 | :--- | :--- | :--- | :--- |
-| **A* (A-Star) / NavFn***<br>*(全域規劃)* | **說明**：ROS 2 (Nav2) 常用的全域規劃器，屬啟發式圖形搜尋（Heuristic Search）方法。<br><br>**優點**：<br>1. 將地圖視為網格，以幾何距離加上預估成本，在毫秒內找出最短路徑<br>2. 邏輯簡單、執行穩定<br><br>**缺點**：<br>1. 網格規劃使路線較生硬（直角多）<br>2. 地圖太大時，搜尋會變慢 | • `/goal_pose`<br>• `/global_costmap/costmap`<br>• `/tf` | • `nav_msgs/msg/Path` |
+| **A* (A-Star) / NavFn**<br>*(全域規劃)* | **說明**：ROS 2 (Nav2) 常用的全域規劃器，屬啟發式圖形搜尋（Heuristic Search）方法。<br><br>**優點**：<br>1. 將地圖視為網格，以幾何距離加上預估成本，在毫秒內找出最短路徑<br>2. 邏輯簡單、執行穩定<br><br>**缺點**：<br>1. 網格規劃使路線較生硬（直角多）<br>2. 地圖太大時，搜尋會變慢 | • `/goal_pose`<br>• `/global_costmap/costmap`<br>• `/tf` | • `nav_msgs/msg/Path` |
 | **Theta* / Smac Planner**<br>*(全域規劃)* | **說明**：ROS 2 (Nav2) 常用的全域規劃器。<br><br>**優點**：<br>1. 打破網格限制，允許機器人規劃出任意角度的平滑斜線，更符合實際物理車輛的行駛軌跡<br>2. 產出的路徑較為平順，可減少額外平滑處理需求<br><br>**缺點**：<br>1. 運算複雜度比傳統 A* 高，並需要較好的處理器<br>2. 在障礙物密集或高解析度地圖下，規劃時間可能增加 | • `/goal_pose`<br>• `/global_costmap/costmap`<br>• `/tf` | • `nav_msgs/msg/Path` |
 | **DWA**<br>*(Dynamic Window Approach)*<br>*(局部控制)* | **說明**：傳統 2D 避障與局部跟隨的速度空間採樣演算法。<br><br>**優點**：<br>1. 在機器人可執行的速度與轉速範圍內進行「模擬試車」，捨棄會撞到障礙物的速度組合，挑選出最安全且最接近全域路徑的速度<br>2. 計算量低且反應快速，適合室內差速驅動機器人<br><br>**缺點**：<br>1. 易陷入局部最優解（例如在狹窄通道卡死）<br>2. 不適合車身很長，並像汽車一樣有迴轉半徑限制的機器人 | • `/local_costmap/costmap`<br>• `/plan`<br>• 編碼器 ➔ `/odom`<br>• `/tf` | • `geometry_msgs/msg/Twist` |
 | **RPP**<br>*(Regulated Pure Pursuit)*<br>*(局部控制)* | **說明**：基於幾何追隨的演算法，多用於工業級 AGV、大型搬運車。<br><br>**優點**：<br>1. 極度穩定且計算量極低，在接近轉角或障礙物時，會自動調速不易甩尾<br>2. 適合讓機器人嚴格沿著既定軌道（像是地上畫的線或虛擬軌道）走的場景<br><br>**缺點**：<br>1. 不具備主動繞障能力，高度依賴全域路徑引導<br>2. 若全域路徑品質不佳或環境變化劇烈，追蹤效果容易受到影響 | • `/plan`<br>• 編碼器 ➔ `/odom`<br>• `/tf` | • `geometry_msgs/msg/Twist` |

@@ -1,168 +1,62 @@
 # 機器人基礎模型 (Foundation Models for Robotics)
 
-隨著 AI 從純粹的文本與影像生成，逐步演進成能感知、推理並控制實體世界的實體 AI，智慧機器人的開發模式也正發生明顯改變，預計將從至今仍普遍採用的**模組化分層流水線（Modular Pipeline）**架構，朝向資料驅動的**端到端學習（End-to-End Learning）**架構發展。
+隨著 AI 從純粹的文本與影像生成，逐步演進成能感知、推理並控制實體世界的實體 AI，智慧機器人的開發模式也正發生明顯改變，預計將從現今仍普遍採用的**基於概率機器人學（Probabilistic Robotics）**架構，朝向資料驅動的**端到端學習式（End-to-End Learning）**架構發展。
 
-前者是將複雜任務先拆分為定位、建圖、路徑規劃等子任務，各自再使用特定演算法處理，最後透過預先設計的介面與規則串接，此架構可控性較高，但面對複雜或未知環境時，往往需要大量人工設計及調校；後者則透過大量資料訓練模型，使其能直接整合視覺影像、自然語言及機器人狀態等多模態資訊，進行環境理解、路徑規劃與任務推理，最後輸出可執行的機器人動作，此方法可減少人工設計規則與中間處理流程的需求，但通常需要大量且多樣化的訓練資料。
-
-而在學習式機器人技術中，**VLA 模型**（Vision-Language-Action）與**強化學習**（Reinforcement Learning，簡稱 RL）是目前兩項重點方向。VLA 模型著重視覺、自然語言與動作之整合，使機器人能理解環境及任務指令，並產生相對應的操作行為，目前廣泛應用在具備機械手臂的機器人上；而 RL 則是透過環境互動及獎勵機制的學習控制策略，特別適合行走、動態平衡等需要連續控制的任務，因此普遍應用在具備雙足或四足的機器人上。
-
-這兩者並非互斥，推測未來機器人架構可能朝向兩者整合，例如由 VLA 負責上層機械手臂的物件操作與任務決策，搭配 RL 負責下層雙足／四足載具的穩定運動。
-
-在機器人基礎模型的發展脈絡中，**VLA (Vision-Language-Action)** 模型是最核心的研究焦點。VLA 將傳統視覺語言模型 (VLM) 的文本生成能力延伸至物理動作空間，並將機器人的連續運動軌跡（如關節角度、末端位姿）離散化或透過擴散／流匹配生成為**動作 Token (Action Tokens)**，藉由預訓練 VLM 賦予機器人強大的物理常識與視覺空間語義理解能力，同時透過機器人遙控（Teleoperation）示範數據進行微調，實現端到端的文字指令到低階馬達控制。
+前者是將複雜任務先拆分為建圖、定位、路徑規劃與控制等子任務，各自再使用特定演算法處理，最後透過預先設計的規則串接，雖然此架構可控性較高，但面對複雜任務或未知環境時，往往需要大量人工設計及參數調校；相較之下，後者則是透過大量資料訓練模型，使模型能直接整合視覺影像、自然語言及機器人狀態等多模態資訊，進行環境理解、路徑規劃與任務推理，最後輸出可執行的機器人動作，此方法能顯著減少人工設計需求，但極度依賴多樣且高品質的訓練資料，是目前實務使用上最主要瓶頸。
 
 ```mermaid
 graph TB
-    subgraph EndToEnd["現代端到端基礎模型 (End-to-End Foundation Model)"]
+    subgraph EndToEnd["未來趨勢：端到端學習式 (End-to-End Learning)"]
         direction TB
-        E_Cam["📷 雙目 / 深度影像"] --> E_Core
-        E_Cmd["🗣️ 自然語言指令<br>('幫我把桌上的蘋果拿到盤子裡')"] --> E_Core
-        E_Pos["⚙️ 機械臂姿態 (Proprioception)"] --> E_Core
+        E_Cam["📷 視覺影像<br>(Vision)<br>圖片"] --> E_Core
+        E_Cmd["🗣️ 自然語言指令<br>(Language)<br>('幫我把桌上的蘋果拿到盤子裡')"] --> E_Core
+        E_Pos["⚙️ 機器人狀態<br>(Robot State)<br>URDF+位姿"] --> E_Core
 
-        subgraph E_Core["🧠 巨量多模態預訓練骨幹 (VLM / VLA Core)"]
-            E_Model["Transformer 端到端隱式推理<br>(網際網路圖文 + 機器人遙控數據)"]
-        end
+        E_Core["🧠 VLA 模型"]
 
-        E_Core --> E_Out["🤖 實體動作向量 (Action Trajectory)<br>[Δx, Δy, Δz, Δroll, Δpitch, Δyaw, Gripper]"]
+        E_Core --> E_Out["🤖 實體動作 (Action)"]
     end
 
-    subgraph Modular["傳統模組化控制流水線 (Modular Pipeline)"]
+    subgraph Modular["現行主流：基於概率機器人學（Probabilistic Robotics）"]
         direction TB
-        M_In["📷 視覺影像 / 雷達數據"] --> M_Perc["👀 感知 (Perception)<br>物體辨識 / SLAM"]
-        M_Perc --> M_State["📍 狀態估計 (State Estimation)<br>姿態 / 座標幾何"]
-        M_State --> M_Plan["🗺️ 路徑規劃 (Planning)<br>A* / RRT / Trajectory"]
-        M_Plan --> M_Ctrl["💪 控制執行 (Control)<br>PID / MPC / 逆運動學"]
-        M_Ctrl --> M_Out["🤖 馬達 / 關節力矩 (Actuator)"]
+        M_Sens["👀 感知 (Perception)<br>原始數據"] --> M_Perc["🗺️ 建圖 (SLAM)<br>演算法"]
+        M_Perc --> M_State["📍 定位 (Localization)<br>演算法"]
+        M_State --> M_Plan["🗺️ 規劃 (Planning)<br>演算法"]
+        M_Plan --> M_Ctrl["💪 控制 (Control)<br>演算法"]
     end
 
     classDef Modular fill:#181825,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4;
     classDef EndToEnd fill:#181825,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4;
+    classDef inputStyle fill:#ffd8c4,stroke:#ef9a72,stroke-width:1.5px,color:#181825;
+    classDef actionStyle fill:#fff0c2,stroke:#e5c05d,stroke-width:1.5px,color:#181825;
+
+    class E_Cam,E_Cmd,E_Pos,M_Sens inputStyle;
+    class E_Out,M_Ctrl actionStyle;
 ```
 
----
+其中在用於機器人訓練的學習式技術領域，**VLA 模型**（Vision-Language-Action Model）與**強化學習**（Reinforcement Learning，簡稱 RL）是目前兩個重點方向。VLA 模型可視為 VLM（Vision-Language Model）往機器人世界的延伸，著重於視覺、自然語言與動作之整合，使機器人能理解環境及任務指令，並產生相對應的操作行為，目前廣泛應用在具備機械手臂的機器人上；而 RL 則是透過環境互動及獎勵機制的學習控制策略，特別適合行走、動態平衡等需要連續控制的任務，因此普遍應用在具備雙足或四足的機器人上。
 
-目前國際產學界已推出多款針對不同應用情境、架構與開源程度的 VLA 基礎模型。以下盤點最具代表性的主流模型：
+這兩者並非互斥，推測未來機器人系統架構，將朝向兩者整合的分層協作發展，例如由 VLA 模型負責上層機械手臂之物件操作與任務決策，搭配 RL 執行下層雙足（或四足）載具的平衡及全身控制，至於特定零組件（例如關節馬達）的速度、扭矩等高頻控制，則依然交由低階控制器以確保穩定性。有鑑於已發展多年的 RL，VLA 模型是近年才快速興起的技術項目，相關資源仍在快速演進，因此以下聚焦**開源**領域，盤點目前具代表性的主流 VLA 模型，供開發者在模型選擇、測試與導入時參考：
 
-| 演算法 / 框架名稱 | 發表時間 | 核心技術架構 | 核心定位與開源狀態 | 主要優點（Pros） | 主要缺點（Cons） | 最佳適用情境（Use Cases） |
+| 模型名稱 | 發表時間 | 核心技術架構 | 核心定位與開源狀態 | 優點 | 缺點 | 最佳適用情境（Use Cases） |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **π0 (π0.5)**<br>*(Physical Intelligence)* | 2024.10 (π0)<br>2025.04 (π0.5) | • PaliGemma 骨幹 + 流匹配（Flow Matching）<br>• 全圖形端到端（End-to-End）架構，利用 FAST 標記器進行高頻關節訊號輸出。 | • 通用具身智能基座模型<br>• 提供開放式軟體層（OpenPi 生態），主打解決物理世界泛化難題。 | • 靈巧操作與變形物體處理能力極強。<br>• 跨不同機械手臂硬體的調適泛化力好。 | • 陌生或極端環境的安全邊界控制具挑戰性。<br>• 對高動態反應需要大量示範數據。 | 家庭自動化（如摺衣服、洗碗）、跨廠牌多關節手臂的通用技能部署。 |
-| **OpenVLA**<br>*(Stanford, UCB, Google)* | 2024 年底 | • Llama-2 (7B) 骨幹 + 雙視覺編碼器 (DINOv2 & SigLIP)<br>• 將視覺與文字輸入直接對齊並輸出離散動作 Token。 | • 開源通用具身智能標竿模型<br>• 完全開源（Apache 2.0），專為學術界與開發者設計的跨實體（Cross-embodiment）底座。 | • 常識推理能力與視覺語義感知極強。<br>• 跨機型運動遷移好，支援 Consumer GPU 微調（LoRA）。 | • 7B 參數體積大，在端側即時高頻（如百 Hz 級）控制對算力要求極高。 | 學術界機器人基礎研究、物流倉庫中跨機型的通用多目標物體抓取與長程規劃。 |
-| **Gemini Robotics**<br>*(Google DeepMind)* | 2025.03 (首發)<br>2026 年初 (ER 1.6) | • 雙模型架構 / 思維鏈動作（Thinking VLA）<br>• Gemini 1.5 負責實時大腦控制 + Gemini-ER 1.6 負責長程因果推理。 | • 商業級語義推理與具身控制系統<br>• 半閉源（優先釋出給特約硬體夥伴），雲端/邊緣高效協同生態。 | • 具備頂尖的空間與時間因果推理，動手前能「內部模擬」。<br>• 整合 Live API 支援流暢語音即時互動。 | • 生態較為閉源，依賴 Google 商業授權。<br>• 對網路頻寬與邊緣運算硬體依賴度高。 | 頂級雙足/多足人形機器人（如新 Atlas, Digit）的複雜室內導航與高階人機協作。 |
-| **Helix**<br>*(Figure AI)* | 2025.02 (Helix 01)<br>2026.01 (Helix 02) | • System 0（大腦控制）+ System 1（全肢體反射）融合<br>• 全神經網路驅動，完全拋棄傳統手寫 C++ 運動學控制代碼。 | • 工業人形機器人垂直整合演算法<br>• 閉源，專為 Figure 自研硬體打造的商業落地作業系統。 | • 完美實現全肢體（Whole-body）動態平衡與控速。<br>• 首創雙機無感視覺協同（靠相機觀察同伴力道）。 | • 與 Figure 硬體高度綁定，第三方硬體適配性差。<br>• 專注於工業場景，開源社群無法自由客製。 | 汽車工廠製造產線（如 BMW 產線）、智慧倉儲重物搬運、雙人/雙機高精度協同作業。 |
-| **GR00T / Isaac GR00T**<br>*(NVIDIA)* | 2024.03 (概念)<br>2025.03 (N1 基礎模型) | • 直覺反射（System 1） + 緩慢思考（System 2）雙系統<br>• 背靠 Isaac 物理模擬器與 Omniverse 生態。 | • 開放式通用人形機器人基礎模型藍圖<br>• 開放權重與藍圖，綁定 NVIDIA Jetson Thor 硬體平台。 | • 跨機體（Cross-embodiment）能力極強。<br>• 依賴模擬器（Sim-to-Real），可在數小時內生成巨量訓練數據。 | • 極度綁定 NVIDIA 的硬體晶片與 Isaac 軟體生態鏈。<br>• 對模擬與真實世界的精確建模（Gap）要求高。 | 人形機器人製造商的通用大腦快速適配、工業級精細雙手操作（Dexterous Manipulation）。 |
+| **OpenPI 系列**<br>*(Physical Intelligence)* | 2024.10 (π0)<br>2025.04 (π0.5) | • 以視覺語言模型（VLM）理解影像與文字指令，再由 Action Expert 產生機器人動作<br>• π₀／π₀.₅ 主要透過 Flow Matching 一次產生一段連續動作（Action Chunk）；另有 π₀-FAST 將動作轉成 Token 後逐步預測。 | • 通用具身智能基座模型<br>• 提供開放式軟體層（OpenPi 生態），主打解決物理世界泛化難題。 | • 靈巧操作與變形物體處理能力極強。<br>• 跨不同機械手臂硬體的調適泛化力好。 | • 陌生或極端環境的安全邊界控制具挑戰性。<br>• 對高動態反應需要大量示範數據。 | 家庭自動化（如摺衣服、洗碗）、跨廠牌多關節手臂的通用技能部署。 |
+| **OpenVLA**<br>*(Stanford, UCB, Google)* | 2024 年底 | • 以視覺編碼器 + 大型語言模型（LLM）理解影像與文字指令<br>• 將機器人動作轉換成 Action Token，像語言模型預測文字 Token 一樣，逐步預測機器人下一步動作。 | • 開源通用具身智能標竿模型<br>• 完全開源（Apache 2.0），專為學術界與開發者設計的跨實體（Cross-embodiment）底座。 | • 常識推理能力與視覺語義感知極強。<br>• 跨機型運動遷移好，支援 Consumer GPU 微調（LoRA）。 | • 7B 參數體積大，在端側即時高頻（如百 Hz 級）控制對算力要求極高。 | 學術界機器人基礎研究、物流倉庫中跨機型的通用多目標物體抓取與長程規劃。 |
+| **GR00T**<br>*(NVIDIA)* | 2024.03 (概念)<br>2025.03 (N1 基礎模型) | • 採用「高階理解 + 低階動作生成」雙系統架構<br>• 上層 VLM 負責理解影像、文字與任務，下層 Action Model 再產生機器人的連續動作。 | • 開放式通用人形機器人基礎模型藍圖<br>• 開放權重與藍圖，綁定 NVIDIA Jetson Thor 硬體平台。 | • 跨機體（Cross-embodiment）能力極強。<br>• 依賴模擬器（Sim-to-Real），可在數小時內生成巨量訓練數據。 | • 極度綁定 NVIDIA 的硬體晶片與 Isaac 軟體生態鏈。<br>• 對模擬與真實世界的精確建模（Gap）要求高。 | 人形機器人製造商的通用大腦快速適配、工業級精細雙手操作（Dexterous Manipulation）。 |
+| **SmolVLA**<br>*(MIT)* | 2025.03 | • 採用輕量化 VLM 理解影像與文字，再由 Action Expert 產生機器人動作<br>• 透過 Flow Matching 一次產生一段連續動作（Action Chunk），並支援非同步推論。 | • 輕量化端到端機器人基礎模型<br>• 完全開源（MIT License），專注於消費級硬體部署與成本優化。 | • 模型參數小，可直接在消費級 GPU 上跑（如 RTX 3050）。<br>• 擴散生成動作品質好，適合精細操作。 | • 2.7B 參數量較小，在複雜抽象推理能力上弱於大型模型。<br>• 離散化+擴散流程速度可能較慢。 | 消費級教育機器人、桌面型自動化設備、邊緣運算平台的個人開發專案。 |
 
 ---
 
-## LeRobot：資料、訓練與部署工具鏈 (Hugging Face LeRobot Ecosystem)
+除了模型本身，如何建立可重複使用的資料蒐集、模型訓練與實機部署流程，才是機器人基礎模型落地的重要環節，這同樣考驗著嘗試使用 VLA 模型的開發者，若各家模型都有自己的一套資料格式與開發流程，那等於開發者在新模型的嘗試上，都必須重新確認資料規格並進行資料轉換與整理；對此，Hugging Face 推出的 **LeRobot**，除了將 Teleoperation（遙控操作）、Dataset（資料集）、Policy Training（策略訓練）到 Deployment（實機部署）串成較標準化的開發流程，更重要的是建立 **LeRobotDataset 資料格式**。
 
-為降低具身智能的開發門檻，Hugging Face 推出了 **LeRobot** 開源專案。LeRobot 之於具身 AI，正如 `transformers` 與 `diffusers` 之於大語言模型與影像生成，旨在建構一套標準化、低成本且跨硬體的機器人資料集、模型訓練與實體部署生態系。
+不論資料原先來自哪一種機器人系統或開發框架，只要轉換成 LeRobotDataset 後，即可進一步銜接 LeRobot 所支援的 VLA 模型，例如當開發者預計從 OpenPI 系列模型切換至 GR00T 進行實驗時，便不必從頭開始，而是可以沿用相同的資料架構，再依模型需求進行必要的資料前處理；它某種程度扮演了 VLA 生態系的資料轉接層（Adapter）：向上承接不同機器人硬體產生的異質資料，向下則銜接不同 VLA 模型，進而降低切換模型時的轉換成本與使用門檻，建議開發者在規劃將 VLA 模型運用在機器人系統之前，LeRobot 會是那個應當優先接觸的工具。
 
-```mermaid
-graph LR
-    subgraph Teleop["1. 低成本遙控與數據採集"]
-    SO100["🤖 SO-100 / Koch 1.1 / Aloha<br>3D 列印遙控手臂"] --> Dataset["📦 LeRobotDataset<br>(Hugging Face Hub)"]
-    end
+---
 
-    subgraph Train["2. 模型訓練與微調"]
-    Dataset --> Policies["🧠 政策模型庫 (Policies)<br>ACT / Diffusion Policy / OpenVLA"]
-    Policies --> Checkpoint["💾 權重檔 (.safetensors)"]
-    end
+最後，當機器人基礎模型逐漸成形後，下一階段的瓶頸將會從「模型能不能完成任務」，逐漸轉向「模型能不能部署至不同機器人」，這涉及 CPU、GPU、NPU 等各項算力配置，目前已可預想，未來機器人的 AI 運算架構將走向**混合式 AI（Hybrid AI）**發展，在這脈絡下三點值得思考的議題：
 
-    subgraph Deploy["3. 邊緣部署與推論"]
-    Checkpoint --> Inference Engine["⚡ ONNX / TensorRT / PyTorch"]
-    Inference Engine --> ROS2["🤖 ROS 2 Controller<br>(/joint_states /cmd_vel)"]
-    end
-
-    classDef Teleop fill:#1e1e2e,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4;
-    classDef Train fill:#1e1e2e,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4;
-    classDef Deploy fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4;
-```
-
-### 5.1 硬體生態與遙控採集 (Teleoperation)
-LeRobot 極力推動低成本開源硬體，讓開發者無需百萬級工業手臂即可進行數據集錄製：
-* **SO-100 & Koch v1.1**：基於 3D 列印與串列匯流排伺服馬達（Serial Bus Servos）打造的 6DoF 雙臂 Master-Slave 系統。
-* **遙控數據錄製**：人類操作 Master 手臂，Slave 手臂跟隨運動，系統同步以 30~60Hz 錄製多路 RGB 相機影像與關節角度。
-
-### 5.2 標準化數據格式 (`LeRobotDataset`)
-LeRobot 規範了統一且高效的機器人數據格式，並與 Hugging Face Hub 無縫整合：
-* **多模態對齊**：自動將 `.mp4` 視覺影像流與 `.parquet` 姿態／動作數值時間軸進行對齊。
-* **串流加載與雲端共享**：支援像下載 LLM 數據集般，透過單行指令下載全球開發者分享的操作軌跡：
-
-```python
-from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
-
-# 直接從 Hugging Face Hub 載入開源機器人操作數據集
-dataset = LeRobotDataset("lerobot/pusht")
-print(f"Total episodes: {dataset.num_episodes}")
-print(f"Features: {dataset.features}")
-```
-
-### 5.3 模型庫與主流策略 (Policies)
-LeRobot 內建了當前最頂尖的模仿學習（Imitation Learning）與 VLA 策略演算法：
-1. **ACT (Action Chunking with Transformers)**：
-   基於 CVAE 與 Transformer 解碼器，將連續動作分割為短塊（Action Chunks），能有效克服累積漂移，適合高精度的微操抓取。
-2. **Diffusion Policy**：
-   將動作生成表達為條件擴散過程（Conditional Diffusion），在處理人類遙控數據中的多峰分布（如「避開障礙物左繞或右繞皆可」）時表現優異。
-3. **VQ-BeT (Vector Quantized Behavior Transformer)**：
-   透過向量量化離散化動作空間，將動作預測轉化為高效率的類語言 Token 預測。
-
-### 5.4 訓練與實體邊緣部署工作流
-從採集數據到將模型掛載至 ROS 2 實體機器人的完整步驟如下：
-
-```
-+-------------------+      +-------------------+      +-------------------+      +-------------------+
-| 1. 遙控數據採集   | ───> | 2. 數據上傳與評估 | ───> | 3. 模型訓練微調   | ───> | 4. ROS 2 邊緣控制  |
-| lerobot-record    |      | lerobot-visualize |      | lerobot-train     |      | ROS 2 Policy Node |
-+-------------------+      +-------------------+      +-------------------+      +-------------------+
-```
-
-#### 步驟 1：採集遙控軌跡
-```bash
-python lerobot/scripts/control_robot.py record \
-    --robot-path lerobot/configs/robot/so100.yaml \
-    --fps 30 \
-    --repo-id <your-hf-username>/so100_pick_apple \
-    --num-episodes 50
-```
-
-#### 步驟 2：訓練 Diffusion / ACT 策略模型
-```bash
-python lerobot/scripts/train.py \
-    --policy.type=diffusion \
-    --dataset.repo_id=<your-hf-username>/so100_pick_apple \
-    --env.type=so100 \
-    --output_dir=outputs/train/so100_diffusion \
-    --batch_size=8 \
-    --steps=100000
-```
-
-#### 步驟 3：整合至 ROS 2 實體控制節點
-在邊緣運算平台（如 NVIDIA Jetson AGX Orin）上，將 LeRobot 預測策略封裝為 ROS 2 節點，實現低延遲閉環控制：
-
-```python
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image, JointState
-from trajectory_msgs.msg import JointTrajectory
-import torch
-
-class LeRobotControlNode(Node):
-    def __init__(self, policy_checkpoint_path):
-        super().__init__('lerobot_control_node')
-        # 載入訓練好的 LeRobot 策略權重
-        self.policy = torch.load(policy_checkpoint_path).eval().cuda()
-        
-        # 訂閱相機影像與當前關節狀態
-        self.create_subscription(Image, '/camera/color/image_raw', self.image_cb, 10)
-        self.create_subscription(JointState, '/joint_states', self.joint_cb, 10)
-        
-        # 發布控制指令給機械臂驅動器
-        self.cmd_pub = self.create_publisher(JointTrajectory, '/arm_controller/joint_trajectory', 10)
-
-    def control_loop(self):
-        # 將最新影像與姿態傳入 LeRobot Policy，產出下一個 Action Chunk
-        with torch.no_grad():
-            action_chunk = self.policy.select_action(self.current_obs)
-        
-        # 發送馬達控制命令
-        self.publish_trajectory(action_chunk)
-```
+  1. **不應追求極致算力，而是在於最佳分配**：機器人本體的運算能力，主要來自於邊緣運算平台（不管是工業電腦亦或是控制板形式）中的 CPU、GPU 及 NPU 三項異質運算單元，三者各有不同特性，因此理想的算力配置應依據硬體特性與工作需求進行分工；例如 CPU 核心為快速反應（Fast response），就讓其負責系統控制、任務邏輯與一般運算，GPU 專注高吞吐量（High Throughput），適合處理大量圖資和 AI 模型推論，至於 NPU 則強調低功耗（Low power），能有效執行裝置端的 AI 推論任務。但是，如何在效能、即時性與功耗之間取得最佳平衡，「什麼才是最佳化分配？」，依然是大哉問，現今產業仍無定論及最佳解。
+  
+  2. **硬體發展的同時，也應注重軟體工具鏈**：過去運算類硬體往往以單一控制晶片或晶片組為主，這讓開發者有較高的自由度，但當 CPU、GPU、NPU 等同時存在後，如何讓 AI 模型在上面做最佳化配置，就讓硬體設計上變得更加複雜，也因此對應發展軟體工具鏈（從模型最佳化、硬體加速到推論執行）就顯得格外重要；目前業界主要以類似建議清單（Suggestion List）的軟體包形式出現，主流就兩個：NVIDIA 的 TensorRT 及 Intel 的 OpenVINO，它們會依據模型規模、即時性及網路條件做**自動分配**，開發者亦可依實際需求，進一步指定硬體優先順序或設定效能條件，不過，目前這類工具仍不是一套能完全自動在 CPU、GPU、NPU 之間進行最佳化調度的通用機制，不同硬體與模型仍需要個別測試與調校。
+  
+  3. **零組件競爭將從「硬體規格」延伸至「整合能力」**：一旦機器人走向混合式 AI，零組件商的市場競爭力也將隨之改變。對運算類零組件來說，未來競爭重點除了晶片本身的算力與功耗，更在於能否建立成熟的異質運算調度工具，讓軟體根據模型規模、即時性、功耗及硬體負載等條件，自動提出最佳部署方案，以降低開發者實務開發上的算力限制；至於對感知類零組件而言，除了持續提供高穩定性的資料傳輸能力，也需要思考直接與晶片更緊密整合的可能性，讓資料能在感測端就做完前處理甚至是 AI 推論，從既有單純感測資料提供，走向具備「感測＋初步分析」能力的 Edge AI 產品。

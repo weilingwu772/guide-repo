@@ -13,7 +13,7 @@ flowchart LR
 
         subgraph NI["原生介面"]
             direction LR
-            HI["硬體介面<br/>(GMSL2、Ethernet、USB、UART...)"]
+            HI["硬體介面<br/>(GMSL、Ethernet、USB、UART...)"]
             CP["通訊協定<br/>(MQTT、RTSP、Modbus TCP...)"]
         end
 

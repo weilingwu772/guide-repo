@@ -11,7 +11,7 @@
 | **規範依據** | 《網路韌性法案》（CRA）<br>《無線電設備指令》（RED） | FCC 管制清單（DA 26-786）<br>《購買美國產品法》（BAA）<br> DoW 有條件核准 |
 | **核心目的** | **「產品資安管理是否健全？」**<br>全生命週期的資安管理及維護 | **「零組件來自於誰與美製成分有多少？」**<br>國家安全、供應鏈可信度與美國製造 |
 | **監管標的** | 所有「具有數位元素的產品」 | 「國外生產之先進機器人裝置」 |
-| **關鍵文件與合規要求** | • 軟體物料清單（SBOM）<br>• 資安風險評估與技術文件<br>• 協調式漏洞揭露與 ≥ 5 年的維護責任 | • BAA 成本計算：產地聲明/採購資料<br>• DoW 有條件核准：軟體物料清單（SBOM）/合規聲明/赴美計畫 |
+| **關鍵文件** | • 軟體物料清單（SBOM）<br>• 資安風險評估與技術文件<br>• 協調式漏洞揭露與 ≥ 5 年的維護責任 | • BAA 成本計算：產地聲明/採購資料<br>• DoW 有條件核准：軟體物料清單（SBOM）/合規聲明/赴美計畫 |
 | **對機器人整機商衝擊** | **中低度衝擊**<br>需建立全生命週期資安維護機制與 24/72h 通報流程 | **高度衝擊**<br>新產品未達美製比例即無法取得 FCC 授權（禁止進口），需轉向在美製造或申請 DoW 有條件核准 |
 | **對零組件供應商衝擊** | **中高度衝擊**<br>具數位元素皆受監管；需配合整機客戶提供資料 | **中低度衝擊**<br>單獨出口不受限；需配合整機客戶提供資料 |
 
@@ -30,16 +30,24 @@
 只要產品的預定用途會與其他裝置或網路有「直接或間接、邏輯或實體資料連線」（direct or indirect logical or physical data connection to a device or network），即被視為是 CRA 的監管項目，但並非所有產品都採取相同強度的認證制度，而是依產品的核心功能（Core Functionality）區分為不同層級：
 
   **1. 一般產品（Default Products）**
-  未被 CRA 列入「重要產品」或「關鍵產品」類別的產品，例如智慧溫控器、不具備連網能力的家電、個人穿戴手環（非醫療器材）、藍牙耳機等，由於資安風險相對較低，此類別允許製造商透過內部控制（Internal Control, based on Module A）來證明合規，不需第三方驗證機構介入。
+  未被 CRA 列入「重要產品」或「關鍵產品」類別的產品，例如智慧溫控器、不具備連網能力的家電、藍牙耳機，等由於資安風險相對較低，此類別允許製造商基於 Module A 規範，透過簽署聲明書（Declaration of Conformity）做自我宣告，不需第三方驗證機構介入。
 
   **2. 第一類重要產品（Important Products – Class I）**
-  通常執行身分驗證、安全防護、權限控制等關鍵功能，若遭破壞會對使用者產生局部性的實質安全損害，例如密碼管理軟體、路由器及智慧家庭產品（像是智慧門鎖、監控攝影機），由於具較高的資安風險，故要求製造商除非可以完全符合官方發布的歐盟協調標準（Harmonised Standards），否則需由第三方驗證機構介入審查。
+  通常執行身分驗證、安全防護、權限控制等關鍵功能，若遭破壞會對使用者產生局部性的實質安全損害，例如密碼管理軟體、路由器及智慧家庭產品（像是智慧門鎖、監控攝影機），由於具較高的資安風險，故要求製造商若能完全符合歐盟協調標準（Harmonised Standards）或歐洲網路安全認證機制（European Cybersecurity Certification Scheme）之規定，就能跟一般產品一樣，基於 Module A 規範做自我宣告，否則需由第三方驗證機構介入審查，進行基於 Module B+C 或 Module H 規範的驗證。
 
   **3. 第二類重要產品（Important Products – Class II）**
-  其資安風險較第一類更高，這類產品若遭到破壞，將對其他系統、服務或大量使用者造成廣泛且嚴重的影響，例如防火牆、虛擬機管理程式（Hypervisors）等，因影響面向廣，而被規範須強制交由第三方驗證機構進行符合性評估，例如 EU-type Examination（Module B）搭配 Module C，或 Full Quality Assurance（Module H）等程序。
+  其資安風險較第一類更高，這類產品若遭到破壞，將對其他系統、服務或大量使用者造成廣泛且嚴重的影響，例如防火牆、虛擬機管理程式（Hypervisors）等，因影響面向廣，而被規範需第三方驗證機構介入，進行基於 Module B+C 或 Module H 規範的認證；有別於第一類重要產品，就算已完全符合歐盟協調標準，也必須接受第三方驗證機構的審查，此外，也接受在歐洲網路安全認證機制下達到實質保證等級。
 
   **4. 關鍵產品（Critical Products）**
-  風險等級最高的產品類別，若遭破壞可能會直接癱瘓能源、交通或金融等關鍵基礎設施，因此部署於其中的智慧電表閘道器、智慧卡、底層安全元件（Secure Elements）等皆屬此之，CRA 對此採取最高級別的強制性合規路徑，除了強制要求第三方驗證機構介入審查，未來可能被要求取得歐洲網路安全認證機制（European Cybersecurity Certification Scheme）下至少 Substantial 保證等級的認證，才能進入歐盟市場。
+  風險等級最高的產品類別，若遭破壞可能會直接癱瘓能源、交通或金融等關鍵基礎設施，因此部署於其中的智慧電表閘道器、智慧卡、底層安全元件（Secure Elements）等皆屬此之，CRA 對此採取最高級別的強制性合規路徑，除了比照第二類重要產品，強制要求取得第三方驗證機構的認證外，目前可基於 Module B+C、Module H 或歐盟協調標準之規範進行合規，但未來可能全面要求在歐洲網路安全認證機制下達到實質保證等級，才能進入歐盟市場。
+
+> **備註**【待補】
+> * 依據XXX，合規 Module 
+>   * Module A：
+>   * Module B：EU-type Examination
+>   * Module C：
+>   * Module H：Full Quality Assurance
+> * 歐洲網路安全認證機制分為三個保證等級：基本保證等級（Basic Assurance Level）、實質保證等級（Substantial Assurance Level）及高保證等級（High Assurance Level）。
 
 ### 1.3 核心要求－從「產品認證」轉向「全生命週期資安」
 
@@ -89,41 +97,39 @@ CRA 對製造商最大的改變，在於歐盟不再將產品資安視為上市�
 ### 2.2 管制項目 - 先進機器人裝置
 並非所有機器人都受管制，但只要任何進口至美國的設備同時滿足以下條件，不論其報關時申報的關稅代碼為何，皆會被認定是管制項目：
 
-- **項目定義**：地面機械移動設備，包括自主移動機器人、人型機器人、四足機器人。
-（A mechanical mobile device, including autonomous mobile robots, humanoid robots, and quadrupeds.）
+- **項目定義**：地面機械移動設備，包括自主移動機器人、人型機器人、四足機器人。<br>A mechanical mobile device, including autonomous mobile robots, humanoid robots, and quadrupeds.
 
 * **基本特徵**：
-    1. 可在地面完成移動、避障或自主導航（capable of locomotion, obstacle avoidance, navigation, or movement on the ground）
-    2. 依靠指令或感測器資料，可脫離近距離人工職守，進行遠端運行（operates at a distance from a human operator or supervisor based on commands or in response to sensor data or any combination thereof）
-    3. 整機加上配套底座的合計重量大於 2 公斤（the combined weight of the device and, if applicable, ground station or docking station is over 4.4lbs）
+    1. 可在地面完成移動、避障或自主導航<br>capable of locomotion, obstacle avoidance, navigation, or movement on the ground
+    2. 依靠指令或感測器資料，可脫離近距離人工職守，進行遠端運行<br>operates at a distance from a human operator or supervisor based on commands or in response to sensor data or any combination thereof
+    3. 整機加上配套底座的合計重量大於 4.4 磅，（約 2 公斤）<br>the combined weight of the device and, if applicable, ground station or docking station is over 4.4lbs
 
 * **關鍵三要素（缺一不可）**：
     1. **感測器**：具備感知環境的感測器（如 LiDAR、紅外線、相機等）。
     2. **連網模組**：具備有線或無線網路連線（如 Wi-Fi、藍牙、行動通訊、衛星等），且任一傳輸速度達 200 kbps 以上。
     3. **控制軟體與 AI**：具有自主導航、移動感知或遠端控制的軟體或機器學習模型，且不論是運行於本機或雲端。
 
-* **明確排除**：固定式工業機器手臂（如 SCARA、直角座標型、並聯式）、聯網乘用車、無人潛水載具及 FDA 監管的醫療手術機器人和行動輔具（如電動輪椅）。
+* **明確排除**：固定式工業機器手臂（如 SCARA、直角座標型、並聯式）、聯網車輛、無人潛水載具及 FDA 監管的醫療手術機器人和行動輔具（如電動輪椅）。
 
 ### 2.3 判定機制 - 美國製造 vs. 國外生產
 同時，FCC 依循《購買美國產品法》（Buy American Act, BAA）對於「產地（Place of Production）」的判定，只要不符合 BAA 的國內終端產品（Domestic End Product）標準之產品，即使設計、軟體甚至部分零組件源自美國，都可能因比例問題而被認定為「國外生產（Foreign-Produced）」而受制於此禁令，其判定基準稱為兩步驟測試（Two-part test）：
 
 * **第一步：製造地是否在美國**
 
-    整機必須在美國本土進行實質製造或組裝。
-    The article must be manufactured in the United States.
+    整機必須在美國本土進行實質製造或組裝。<br>The article must be manufactured in the United States.
 
 * **第二步：美製零組件占比門檻**
 
     或是整機內的美製零組件成本，占全部零組件成本的比例必須超過指定門檻：
     - **2024 至 2028 年送交之產品**：門檻為 **65%**
     - **2029 年（含）起送交之產品**：門檻提高至 **75%**
-    The cost of domestic components shall exceed 65 percent for items delivered in calendar years 2024 through 2028 and 75 percent for items delivered starting in calendar year 2029.
+    - The cost of domestic components shall exceed 65 percent for items delivered in calendar years 2024 through 2028 and 75 percent for items delivered starting in calendar year 2029.
     
     $$\text{美製零組件成本比例} = \frac{\sum \text{美製零組件成本（Cost of Domestic Components）}}{\text{整機零組件總成本（Cost of All Components）}} \times 100\%$$
 
     其中，在計算上有兩點需要特別注意：
-      - 主要計算零組件本身的採購或製造成本，而最終產品在美國進行組裝所產生的人工、廠房及產品測試等成本，則不予列入計算。
-      - 分為「零組件（Component）」與「次級零組件（Subcomponent）」，前者指直接組裝進機器人整機的部件（例如馬達、電池、感測器），後者指組裝進零組件的更小部件（例如感測器內晶片、電池內電芯）；若該零組件是美國製造，即使其使用來自台灣的次級零組件，這整顆零組件的成本仍可視為美製零組件成本。
+      * 主要計算零組件本身的採購或製造成本，而最終產品在美國進行組裝所產生的人工、廠房及產品測試等成本，則不予列入計算。
+      * 分為「零組件（Component）」與「次級零組件（Subcomponent）」，前者指直接組裝進機器人整機的部件（例如馬達、電池、感測器），後者指組裝進零組件的更小部件（例如感測器內晶片、電池內電芯）；若該零組件是美國製造，即使其使用來自台灣的次級零組件，這整顆零組件的成本仍可視為美製零組件成本。
 
 ### 2.4 國內機器人產業的衝擊
 
@@ -140,13 +146,42 @@ CRA 對製造商最大的改變，在於歐盟不再將產品資安視為上市�
   - 可能面臨供應鏈重新洗牌的風險，主要取決於美國客戶是否願意付出占比額度，來使用非美製的零組件。
 
   - 需要高度配合機器人整機客戶，提供詳盡的供應鏈與成本資料，以協助客戶通過 BAA 判定或申請 DoW 有條件核准，在 BAA 判定上，目前預估需配合提供的文件有：
-    1. 零組件原產地與製造地聲明（Component Origin & Manufacturing Location Declaration）：提供零組件之製造國家、製造廠址及必要佐證。
-    2. 零組件採購成本與報價證明（Component Cost & Invoice Proof）：作為客戶計算上的法定依據，除了該零組件的銷售金額，另需包含運送至客戶工廠的運費及關稅。
-    3. （Optional）在美製造與成本拆解資料（U.S. Manufacturing Process & Component Cost Documentation）：若是與客戶合作在美國本土製造該零組件，將半成品運往美國，並在當地進行晶片韌體燒錄、感知鏡頭校正、或硬體總裝，這在法律上構成「實質轉型（Substantial Transformation）」，台廠需配合提供在美製造製程說明書（Manufacturing Flowchart）、晶片燒錄與感知校正之技術規格書，以及該零組件在美製造的成本拆解表（Cost Breakdown Dossier），包含台廠在美生產該組件的材料費、在美廠房折舊與經常性費用。
 
-  - 在客戶申請 DoW 有條件核准上，目前預估需配合提供的文件有：
-    1. 軟體物料清單（Software Bill of Materials, SBOM）：內建的所有軟體、韌體（Firmware）、驅動程式（Drivers）與 AI/機器學習模型權重（Model Weights）的完整原始碼來源國與版本清單。
-    2. 軟韌體智慧財產權與安全維護聲明書（IP Ownership & Firmware Security Declaration）：聲明該組件軟韌體的 IP 擁有權歸屬實體（證明非屬受制裁之敵對國實體）；並說明未來進行資安漏洞修補（Vulnerability Patching）與安全 OTA 更新的責任歸屬與執行流程。
-    3. 零組件硬體物料清單與邏輯晶片源頭宣告（Detailed HBOM & Chipset Origin Declaration）：提供該感知/運算元件本身的詳細 BOM 表，必須指明核心處理晶片（如 SoC、MCU、DSP）、影像感測器、通訊晶片等關鍵「邏輯承載元件（Logic-bearing physical components）」的生產地/國家（Country of Origin）與晶片品牌商。
-    4. 供應商公司背景與合規聲明（Supplier Corporate Structure & Ownership Certification）：提供台廠股權結構圖，證明持有 5% 或以上股權的實質受益人、董事會與高階主管皆無特定外國政府所有、控制、實質影響力或物質融資支持。
-    5. 獨家供應與供應鏈應變計畫書（Sole Source Justification & Contingency Plan）：若台廠零組件是該美商整機的獨家或不可替代來源，客戶必須在申請書中指明台廠的產地與背景。台廠則需配合提供產能備援計畫、跨國多廠區生產證明（證明有非中、非俄之第三國備援廠區）或技術相容性替代方案評估，以證明當供應鏈中斷時有足夠的抗風險韌性。
+    1. **零組件產地與製造地聲明**
+    提供零組件之製造國家、製造廠址及必要佐證。
+
+    2. **零組件採購成本與報價證明**
+    作為客戶計算上的法定依據，除了該零組件的銷售金額，另需包含運送至客戶工廠的運費及關稅。
+
+    3. **【Optional】在美製造與成本拆解資料**
+    若是與客戶合作在美國本土製造該零組件，將半成品運往美國，並在當地進行晶片韌體燒錄、感知鏡頭校正、或硬體總裝，這可視為「實質轉型（Substantial Transformation）」，若是依此合作模式，零組件商就需配合提供在美製造製程說明書（Manufacturing Flowchart）、晶片燒錄與感知校正之技術規格書，以及該零組件在美製造的成本拆解表（Cost Breakdown Dossier），內含在美國當地支付的材料費、廠房折舊與經常性費用。
+
+  - 若非美國的機器人整機客戶，欲申請 DoW 有條件核准，目前預估需配合提供的文件有：
+
+    1. **公司基本資料、股權結構與合規聲明**
+    公司法定名稱、註冊地及主要營業地點，並揭露公司股權與控制結構，包括持有 5% 或以上股權之實質受益人、董事會成員及高階主管等資訊，以及是否涉及外國政府之所有、控制、影響、融資或其他重大支持。
+    → **【視審查需求配合】零組件商非此項資料的直接申報主體，但整機客戶可能會依供應鏈背景及國安風險審查需要，要求配合提供公司、股權或控制結構等資料**
+
+    2. **硬體物料清單與產地資料**
+    機器人內的詳細硬體物料清單（Bill of Materials，簡稱 BOM 表），以及所有零組件的產地資訊，包含所有的「邏輯承載元件（Logic-bearing physical components）」及晶片品牌商。
+    → **零組件商需提供產品的詳細 BOM 表與對應產地**
+
+    3. **軟韌體來源及管理資訊**
+    機器人內建的軟體與韌體之來源國（Country of Origin for Onboard Software and Firmware），並說明相關智慧財產權歸屬，以及負責軟體後續更新的公司（Entity Responsible for Software updates）。
+    → **零組件商需提供產品的軟韌體資訊**    
+
+    4. **各國供應鏈集中度與供應鏈風險分析**
+    供應鏈在不同國家或地區之分布，包括各國供應來源占整體供應鏈價值及生產量的比例。
+    → **零組件商需提供生產來源、供應來源、國別分布、價值或生產量等資料**
+
+    5. **單一來源供應與供應鏈應變計畫（Sole-Source / Single-Point-of-Failure & Contingency Plan）**
+    辨識供應鏈中的單點失效風險，包括獨家或單一來源供應商、其所在國家，以及若相關供應商發生斷供時可採取的替代來源、備援生產或其他應變措施。
+    → **【視合作模式配合】零組件商若為該整機產品之獨家或不可替代來源，需配合提供產能備援、跨國多廠區生產能力或技術相容性替代方案等資訊**
+
+    6. **現有美國製造與組裝能力（Existing U.S. Manufacturing & Assembly Capabilities）**
+    說明目前已在美國建立的製造與組裝能力，包括美國境內製造／組裝之產品或製程、相關廠址、人力配置及目前在美國完成之製造或組裝比例等，以作為後續擴大美國本土製造能力的基礎。
+    → **【視合作模式配合】零組件商若參與在美製造才需提供**
+
+    7. **美國製造及在地外包生產（On-Shoring）投資計畫（U.S. Manufacturing & Onshoring Plan）**
+    未來 1～5 年的具體規劃，例如資本支出、投資/融資規模、廠房新建或擴建、產線與產能提升、預計新增之美國員工及其職務功能，以及主要執行里程碑與預定完成時程。
+    → **【視合作模式配合】零組件商若參與在美製造才需提供**

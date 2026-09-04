@@ -2,8 +2,8 @@
 
 此為今年度規劃產出一本技術類指引的文本底稿儲存庫。
 預計名稱：
-**ROBOT READY**
-Foundation · Integration · Trends
+**ROBOT READY**<br>
+Foundation · Integration · Trends<br>
 **基於 ROS 2 - 機器人系統通用入門指引** 
 
 ---

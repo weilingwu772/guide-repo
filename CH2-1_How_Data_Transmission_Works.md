@@ -8,7 +8,7 @@
 
 【待畫圖】架構示意如下
 <!-- ![介面與協定](./images/data_transmission_architecture.jpg) -->
-<p align="center"><img src="./images/data_transmission_architecture.jpg" style="width:600px" ></p>
+<p align="center"><img src="./images/data_transmission_architecture.jpg" style="width:600px" /></p>
 
 ## 1. 硬體介面（Hardware Interfaces）
 

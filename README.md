@@ -17,9 +17,9 @@ Foundation · Integration · Trends
 | [CH 1-2. 主流開發框架](CH1-2_Why_use_ROS_2_for_robot_development.md) | v2 | 7/26  | 已完成 |
 | [CH 1-3. 感知工程規範](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | v2 | 7/26  | 補產品 |
 | [CH 2-1. 資料傳輸機制](CH2-1_How_Data_Transmission_Works.md) | v2 | 9/4 | 已完成 |
-| [CH 2-2. ROS 2 零組件整合](CH2-2_Integrating_Components_with_ROS_2.md) | v1 | 9/5 | 待 review |
+| [CH 2-2. ROS 2 零組件整合](CH2-2_Integrating_Components_with_ROS_2.md) | v1 | 9/4 | 待完成 |
 | [CH 2-3. 座標與時間同步](CH2-3_Getting_Space_and_Time_in_Sync.md) | v2 | 9/4 | 已完成 |
-| [CH 3-1. 主流演算法](CH3-1_What_Algorithms_Do_Robots_Use.md) | v2 | 9/5 | 待 review |
+| [CH 3-1. 主流演算法](CH3-1_What_Algorithms_Do_Robots_Use.md) | v2 | 9/4 | 待 review |
 | [CH 3-2. 機器人基礎模型](CH3-2_Foundation_Models_for_Robotics.md) | v1 | 9/4 | 待 review |
 | [CH 3-3. 市場合規要求](CH3-3_Market_Compliance_Requirements.md) | v1 | 9/4 | 待 review |
 
@@ -43,4 +43,4 @@ Foundation · Integration · Trends
 - **提供畫面截圖**：將需要調整或有誤的畫面截圖，並標註您的建議後提供。
 
 ---
-*最後更新日期：2026-09-05*
+*最後更新日期：2026-09-04*

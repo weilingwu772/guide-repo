@@ -200,86 +200,12 @@ flowchart LR
 
 ## 2. 常見產品規格 — 從驅動觀察主流設計
 
-在實務上，可以透過觀察常見產品提供的官方 ROS Package 之 Launch 檔結構，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動程式或整合系統時可參考的內容：
+在實務上，可以透過觀察常見產品提供的官方 ROS Package，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動程式或整合系統時可參考的內容：
 
-### 案例 A：RealSense (D400系列) — 影像與深度感測器
+### 案例 A：RealSense (D400系列) — 深度相機
 - **官方 Package**：`realsense2_camera`
-- **官方 Launch 檔範例**：
-  ```python
-  from launch import LaunchDescription
-  from launch_ros.actions import Node
-  
-  def generate_launch_description():
-  # 宣告感測器的驅動節點 (建議置於官方引導文件中)
-    sensor_driver_node = Node(
-        package='vendor_sensor_camera',
-        # 廠商專屬功能包名稱 (全小寫、底線分隔)
-        executable='vendor_sensor_node',
-        # 驅動執行檔名稱
-        name='sensor_camera',
-        # 預設節點名稱
-        namespace='sensor',
-        # 預設命名空間 (便於多感測器拓撲延伸)
-        output='screen',
-        # 輸出日誌至終端機 (便於開發者除錯)
-        parameters=[{
-        # 硬體控制參數
-            'enable_color': True,
-            # 是否啟用色彩串流
-            'enable_depth': True,
-            # 是否啟用深度串流
-            'depth_module.profile': '640x480x30',
-            # 支援的硬體組態：解析度與幀率 (Width x Height x FPS)
-            'pointcloud.enable': True
-            # 是否由內建演算法直接計算並發布 3D 點雲
-        }]
-    )
-    
-    return LaunchDescription([sensor_driver_node])
-
-  ```
-
 - **節點 Node 觀察**：採 Driver Node 模式，原廠不建議使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature`與`sensor_msgs/msg/CameraInfo`。
 
-### 案例 B：RPLIDAR (Slamtec) — 2D 機械旋轉式光達
+### 案例 B：RPLIDAR (Slamtec) — 2D 光達
 - **官方 Package**：`rplidar_ros`
-- **官方 Launch 檔範例**：
-  ```python
-  from launch import LaunchDescription
-  from launch_ros.actions import Node
-
-  def generate_launch_description():
-    # 宣告廠商光達的驅動節點
-  lidar_driver_node = Node(
-      package='vendor_lidar_ros',
-      # 廠商專屬功能包名稱 (全小寫、底線分隔)
-      executable='vendor_lidar_node',
-      # 驅動執行檔名稱
-      name='lidar_node',
-      # 預設節點名稱
-      output='screen',
-      # 輸出日誌至終端機
-      parameters=[{
-      # 硬體通訊配置
-          'channel_type': 'serial',
-          # 通訊型態：serial 或 udp/tcp
-          'serial_port': '/dev/vendor_lidar',
-          # 建議帶入 udev 綁定後的固定設備名稱
-          'serial_baudrate': 115200,
-          # 實體 UART 的鮑率
-          'frame_id': 'laser_frame',      
-          # 該光達數據在 TF 樹中的座標系名稱
-          'inverted': False,
-          # 倒置安裝模式 (若機構設計將光達反著裝，可由驅動自動反轉)
-          'angle_compensate': True,
-          # 角度補償，確保馬達轉速波動時，點雲角度依然均勻分佈
-          'scan_mode': 'Standard'
-          # 掃描模式選擇 (例如：高精確度、長距離、高頻率模式)
-        }]
-    )
-    
-    return LaunchDescription([lidar_driver_node])
-
-  ```
-
 - **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動程式會將硬體當下的旋轉角度與探測距離，打包並發布`sensor_msgs/msg/LaserScan`。

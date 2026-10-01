@@ -202,10 +202,14 @@ flowchart LR
 
 在實務上，可以透過觀察常見產品提供的官方 ROS Package，回推出 Node 類別架構設計，這能成為開發者在自行撰寫感測器驅動程式或整合系統時可參考的內容：
 
-### 案例 A：RealSense (D400系列) — 深度相機
+### 案例 A：RealSense D400系列 — 深度相機
 - **官方 Package**：`realsense2_camera`
-- **節點 Node 觀察**：採 Driver Node 模式，原廠不建議使用自訂資料格式，主要發布 `sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature`與`sensor_msgs/msg/CameraInfo`。
+- **節點 Node 觀察**：原廠驅動程式會將相機取得的彩色影像、深度影像、點雲及 IMU 等感測資料轉換為 ROS 訊息並發布，已內建大量標準訊息格式，如`sensor_msgs/msg/Image`、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/Imu`、`sensor_msgs/msg/Temperature`與`sensor_msgs/msg/CameraInfo`，因此不建議再另行使用自訂資料格式。
 
-### 案例 B：RPLIDAR (Slamtec) — 2D 光達
+### 案例 B：Slamtec RPLIDAR系列 — 2D 光達
 - **官方 Package**：`rplidar_ros`
-- **節點 Node 觀察**：採 Sensor Data Publisher Node 模式，原廠驅動程式會將硬體當下的旋轉角度與探測距離，打包並發布`sensor_msgs/msg/LaserScan`。
+- **節點 Node 觀察**：原廠驅動程式會將光達掃描過程中取得的旋轉角度與探測距離，整理後以標準訊息格式`sensor_msgs/msg/LaserScan`發布。
+
+### 案例 C：Cupola360 — 全景相機
+- **官方 Package**：`cupola360_ros2`
+- **節點 Node 觀察**：原廠驅動程式會將相機已完成拼接的全景影像（Equirectangular Panorama），以標準訊息格式`sensor_msgs/msg/Image`發布；另可透過原廠自訂訊息格式`cupola360_msgs/msg/PanoramaInfo`，取得全景影像幾何資訊，供其他節點進一步進行球面座標轉換、局部視角擷取或其他全景幾何運算處理。

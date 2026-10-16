@@ -22,7 +22,7 @@
 
 | 演算法 / 套件 | 特點 / 優缺點 | 對接硬體與輸入 Topic (說明) | 主要輸出 Message |
 | :--- | :--- | :--- | :--- |
-| **AMCL**<br>*(Adaptive Monte Carlo Localization)* | **說明**：基於粒子濾波器架構，是 Monte Carlo Localization（MCL） 自適應版本，也是 ROS 2 導航內建的經典 2D 定位演算法。<br><br>**優點**：<br>1. 在地圖中灑出大量「可能位置的粒子」，結合里程計的移動資訊與光達掃描和地圖的比對結果，以估計機器人位姿<br>2. 計算資源消耗較低<br><br>**缺點**：<br>1. 屬於已知地圖定位方法，必須先具備可供比對的地圖<br>2. 若環境變動太大時（例如預設的地圖是空的，但現實中被貨物堆滿）就容易失準 | • `/map` (可自建也可匯入的靜態黑白地圖)<br>• 2D 光達 ➔ `/scan`<br>• `/tf` | • `geometry_msgs/msg/PoseWithCovarianceStamped`<br>• `geometry_msgs/msg/PoseArray`<br>• `tf2_msgs/msg/TFMessage` |
+| **AMCL**<br>*(Adaptive Monte Carlo Localization)* | **說明**：基於粒子濾波器架構，是 Monte Carlo Localization（MCL） 自適應版本，也是 ROS 2 導航內建的經典 2D 定位演算法。<br><br>**優點**：<br>1. 在地圖中灑出大量「可能位置的粒子」，結合里程計的移動資訊與光達掃描和地圖的比對結果，以估計機器人位姿<br>2. 計算資源消耗較低<br><br>**缺點**：<br>1. 屬於已知地圖定位方法，必須先具備可供比對的地圖<br>2. 若環境變動太大時（例如預設的地圖是空的，但現實中被貨物堆滿）就容易失準 | • `/map` (可自建也可匯入的靜態黑白地圖)<br>• 2D 光達 ➔ `/scan`<br>• `/tf` | • `geometry_msgs/msg/PoseWithCovarianceStamped`<br>• `nav2_msgs/msg/ParticleCloud`<br>• `tf2_msgs/msg/TFMessage`（主要負責 map → odom 座標轉換關係） |
 | **EKF / UKF**<br>*(Extended Kalman Filter / Unscented Kalman Filter)* | **說明**：常見的多感測器融合演算法，可將編碼器、IMU、GPS 等不同來源的移動與位置資訊整合，持續估算機器人的位姿，在 ROS 2 中可透過`robot_localization`套件實作。<br><br>**優點**：<br>1. 整合多種感測器資訊，降低只依賴單一感測器造成的定位誤差<br>2. 可依不同感測器的可信程度進行融合，使位置估算更加穩定<br><br>**缺點**：<br>1. 若輸入資料誤差過大，也可能影響融合結果<br>2. 需要正確設定各感測器的誤差與參數，設定不當可能造成定位漂移或不穩定 | • 編碼器 ➔ `/odom`<br>• IMU ➔ `/imu`<br>• GPS ➔ `/gps/fix` (選配) | • `nav_msgs/msg/Odometry`<br>• `tf2_msgs/msg/TFMessage` |
 
 ## 3. 規劃 (Planning)

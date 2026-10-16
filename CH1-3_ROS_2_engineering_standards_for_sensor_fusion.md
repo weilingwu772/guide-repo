@@ -128,7 +128,7 @@ flowchart LR
   * **旋轉表示方式**：逆時針方向為正
     1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點(singularities) 。
     2. Rotation Matrix：無奇異點。
-    3. Fixed-axis Roll-Pitch-Yaw：依序繞 Y、X、Z 軸的角速度。
+    3. Fixed-axis Roll-Pitch-Yaw：依序繞 X、Y、Z 軸的角速度。
     4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。
       
   * **協方差矩陣表現方式**（Covariance Representation）：規範感測器資料中的協方差矩陣應採 Row-major（以列為主）的方式，各元素則依對應訊息所定義的變數順序做排列，例如位置協方差依 X、Y、Z 排列，而位姿與速度協方差則依 X、Y、Z、Roll、Pitch、Yaw 的順序排列。

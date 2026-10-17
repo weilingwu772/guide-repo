@@ -23,32 +23,33 @@
 | **I²C**<br>*(Inter-Integrated Circuit)* | 控制訊號、感測器資料、暫存器讀寫 | 使用兩條訊號線（SDA、SCL）即可連接多個週邊裝置，是載板內短距離的低速通訊方式 | • IMU<br>• 電子皮膚<br>• 溫度感測器 |
 | **SPI**<br>*(Serial Peripheral Interface)* | 感測器資料、暫存器讀寫、Flash 記憶體資料 | 使用四條訊號線（MOSI、MISO、SCLK、CS）進行資料傳輸，傳輸速度快，是載板內短距離的高速通訊方式 | • IMU<br>• 電子皮膚<br>• 編碼器 |
 | **GMSL**<br>*(Gigabit Multimedia Serial Link)* | 高解析度影像、感測器資料、控制訊號 | ADI 高速傳輸技術，需搭配其對應晶片，就可透過同軸纜線傳輸資料並支援 PoC 供電，具長距離、高頻寬及抗干擾等優勢；其中 GMSL1 約 3 Gbps，仍常見於 2MP 等級影像的工業機器人應用，GMSL2 則有更高傳輸能力，廣泛應用於車載及高階視覺系統，目前亦已發展至 GMSL3，進一步提升傳輸頻寬，以支援更高解析度及高資料量的感測器應用 | • RGB 相機（車用等級）<br>• 全景相機 |
-| **Ethernet** | 影像串流、點雲、控制封包、IP 網路資料 | 目前最普遍的有線乙太網路介面，不僅可作為一般網路通訊，也能直接連接高速感測器，具高頻寬、長距離、標準化網路架構等優勢 | • 3D 光達<br>• RGB 相機<br>• 馬達 |
-| **USB** | 影像、點雲、數位音訊、批次資料 | 最常見的高速介面，即插即用（Plug & Play），支援熱插拔，並可同時提供資料傳輸與裝置供電 | • 深度相機<br>• RGB 相機<br>• 語音模組（USB Audio Class，UAC；內含 MEMS 麥克風） |
-| **RS-232** | ASCII 字串、控制命令、序列資料 | 傳統短距離點對點傳輸，架構簡單，但傳輸距離增加時訊號易衰減，不適合影像等大量資料傳輸 | • 2D 光達<br>• 控制器 (舊型) |
-| **RS-422 / RS-485** | 控制命令、感測器資料、序列資料 | 差動訊號傳輸，具長距離、抗干擾等優勢，同樣常見於工業設備 | • 控制器<br>• 力 / 力矩感測器<br>• 末端執行器 |
+| **Ethernet** | 影像串流、點雲、控制封包、IP 網路資料 | 目前最普遍的有線乙太網路介面，不僅可用於一般網路通訊，也能連接高速感測器，具高頻寬、傳輸距離具彈性及標準化網路架構等優勢；部分設備亦支援 PoE（Power over Ethernet），可透過單一網路線同時進行資料傳輸與供電 | • 3D 光達<br>• RGB 相機<br>• 馬達 |
+| **USB** | 影像、點雲、數位音訊、批次資料 | 最常見的高速介面，即插即用（Plug & Play），支援熱插拔，並可同時提供資料傳輸與裝置供電 | • 相機（如 RGB、深度及全景相機等）<br> 語音模組（USB Audio Class，UAC；內含 MEMS 麥克風） |
+| **RS-232** | ASCII 字串、控制命令、序列資料 | 傳統短距離點對點傳輸，架構簡單，但傳輸距離增加時訊號易衰減，不適合影像等大量資料傳輸 | • 2D 光達<br>• 控制器（ 舊型）|
+| **RS-422 / RS-485** | 控制命令、感測器資料、序列資料 | 差動訊號傳輸，具長距離、抗干擾等優勢，同樣常見於工業設備 | • 控制器<br>• 力 / 力矩感測器<br>• 馬達（部分廠商仍採用 RS-485）|
 | **GPIO**<br>*(General-Purpose Input/Output)* | 數位狀態、控制訊號 | 通用型數位訊號介面，可用來讀取裝置狀態或控制外部裝置，具簡單、彈性高等特點 | • 編碼器<br>• 按鈕/開關 |
 | **CAN / CAN FD**<br>*(Controller Area Network)* | 控制命令、感測器資料、裝置狀態 | 差動訊號傳輸，可讓多個裝置共用同一條匯流排（CAN Bus），具抗干擾及可靠度高等優勢；CAN FD 則為 CAN 的擴充版本，將每個資料框的資料長度由最高 8 Bytes 提升至 64 Bytes，並支援更高的資料階段傳輸速率 | • 馬達<br>• 控制器<br>• 編碼器 |
 
-若尚不熟悉機器人開發上會使用到的硬體介面有哪些，從市面上針對機器人應用設計的專用型控制器（Robot Controller）及其載板（Carrier Board）著手，或許是個不錯的開始，此類產品通常已整合開發與系統建置過程中的主要介接需求，因此本文透過盤點市售產品的介面配置（I/O Layout），以此歸納出目前業界較為共通的硬體介面配置，供開發者作為初期規格規劃與運算硬體選型時的參考。
+若尚不熟悉機器人開發上會使用到的硬體介面有哪些，從市面上針對機器人應用設計的專用型控制器（Robot Controller）及其載板（Carrier Board）著手，或許是個不錯的開始，此類產品通常已整合開發與系統建置過程中的主要介接需求，因此下述將以此為分析視角，盤點市售產品的介面配置（I/O Layout），歸納出目前業界較為共通的硬體介面配置，供開發者作為初期規格規劃與運算硬體選型時的參考。
 
-- **GMSL2**：8 channels（via 2 ports）→ 用於接多相機以確保360度環境感知，但並非標配，若無提供可依相機規格改採用 USB 或 MIPI
-- **Ethernet**：1 - 5 ports → 依傳輸頻寬與應用需求，可概分為一般網路、高速網路及 EtherCAT 用途
-  - 一般網路：1GbE（或 2.5GbE），用於接光達等高資料量感測器及其他網路裝置
-  - 高速網路：例如 QSFP28，可做到大量資料交換與高速網路傳輸
-  - EtherCAT 用途：100 Mbps 傳輸速率，因應像是馬達的低延遲、高同步之控制需求
+- **GMSL2**：8 channels（via 2 ports）→ 目前非標配，若無提供可依相機規格、傳輸頻寬與距離需求，改接 USB 或 MIPI 介面
+- **Ethernet**：1 - 5 ports → 依應用需求，可區分為一般乙太網路通訊與 EtherCAT 控制用途
+  - 一般乙太網路通訊：用於連接光達、網路攝影機等高資料量感測器及其他網路設備
+  - EtherCAT 控制用途：通常採用 100 Mbps 傳輸速率，因應像是馬達的低延遲、高同步之控制需求
 - **USB**：2 - 4 ports → 常用 USB 3.2 Gen 1 、USB 3.2 Gen 2 或 USB2.0 版本，並採用 Type-C 或 Type-A 接頭標準
 - **Serial / COM**：4 channels (via 1 port) → 有單一 (4 x RS485)或混合 (2 x RS232 + 2 x RS-232/485/422)配置
 - **GPIO**：1 port → 內含 7 – 8 × GPI 與 7 – 8 × GPO
-- **CAN / CAN FD**：2 - 6 channels（via 1 or 2 ports） → 輪型基本用 2 channels，人型與狗型因有更多關節馬達控制需求，會來到 4 - 6 channels，當需求更高時則搭配使用 EtherCAT 
+- **CAN / CAN FD**：2 - 6 channels（via 1 or 2 ports） → 輪型基本用 2 channels，人型與狗型因有更多關節馬達控制需求，會來到 4 - 6 channels；當需求更高時則搭配接 Ethernet 介面以 EtherCAT 進行控制
 - **Audio**：1 x 3.5mm Jack → Mic-in 麥克風輸入與 Line-out 音訊輸出
 - **HDMI**：1 port → 顯示輸出
 
-> **註**：上述盤點僅聚焦於 I/O 介面，不納入 PCIe、M.2 等擴充介面（Expansion Interface）
+> **註**：
+> * 上述盤點僅聚焦於 I/O 介面，不納入 PCIe、M.2 等擴充介面（Expansion Interface）
+> * 規格取材於研華、研揚科技、超恩、創博、鑫創電子等旗下適用於機器人的市售產品
 
 ## 2. 通訊協定（Communication Protocol）
 
-通訊協定是不同軟硬體間交換資料所應共同遵循的規範，建立於硬體介面之上並定義封包結構，通常包含資料格式、傳輸流程、錯誤處理及連線方式等；而在機器人開發實務中，會依零組件類型與應用情境會採用不同的協定，以下從開發者視角，依應用需求整理常用通訊協定：
+通訊協定是不同軟硬體間交換資料所應共同遵循的規範，建立於硬體介面之上並定義封包結構，通常包含資料格式、傳輸流程、錯誤處理及連線方式等；而在機器人開發實務中，會依零組件類型與應用情境會採用不同的協定，以下從開發者視角，以下將從開發者視角，依據六種應用類型，盤點常用的通訊協定及其特性與典型應用場景：
 
 - **視覺與影像裝置（Vision & Imaging Devices）**：當機器人需要管理外部網路攝影機（IP Camera）並取得即時影像，或是進行影音串流傳輸時，就會使用這類通訊協定。
 - **雲端與系統整合（Cloud & System Integration）**：當機器人要連接雲端平台、車隊管理系統（Fleet Management）或 Web 系統時，會需要透過這類通訊協定交換設備狀態、任務資訊及系統資料。
@@ -57,7 +58,7 @@
 - **控制器或工業設備（Controller & Industrial Devices）**：機器人本體內的控制器、馬達驅動器等零組件需要交換控制命令與設備狀態時，皆使用此類通訊協定；此外，若機器人要與外部工業設備進行資料交換，例如與產線輸送帶連動，也是使用這類通訊協定。
 - **車用系統（Automotive Systems）**：主要應用於智慧車輛與自駕系統，若機器人在設計上採用車載電子架構，例如車廠開發高階人型機器人時，沿用既有的車用技術與系統架構，便可能使用這類通訊協定，讓各個控制單元能交換服務與資料。
 
-| 協定名稱 | 應用分類標籤 | 通訊方式 | 主要特點 | 典型應用場景 |
+| 協定名稱 | 應用類型 | 通訊方式 | 主要特點 | 典型應用場景 |
 | :--- | :--- | :--- | :--- | :--- |
 | **ONVIF**<br>*(Open Network Video Interface Forum)* | `Vision & Imaging Devices` | HTTP / IP Network <br> (HTTP / SOAP Web Services) | 提供不同品牌網路攝影機的互通標準，著重設備搜尋、設定、控制、影音串流與事件管理 | • 串接網路攝影機 |
 | **RTSP**<br>*(Real-Time Streaming Protocol)* | `Vision & Imaging Devices` | IP Network <br> (RTSP Control / RTP Streaming) | 建立、控制與管理即時影音串流，可控制播放、暫停及停止等操作 | • 即時取得網路攝影機的影音 |
@@ -68,6 +69,6 @@
 | **UDP**<br>*(User Datagram Protocol)* | `Network Communication` | IP <br> (Connectionless / Datagram) | 提供無連線、低延遲的資料傳輸方式，不保證封包送達或傳輸順序，因此傳輸效率高 | • 即時性要求高且允許少量丟包的應用，如 3D 光達的點雲資料傳輸 |
 | **NMEA 0183**<br>*(National Marine Electronics Association 0183)* | `Positioning Devices` | Serial Communication <br> (Talker / Listener) | GNSS 與導航設備的資料交換標準，以 ASCII 文字串列傳輸經緯度、速度、航向、時間等定位資訊 | • 讀取 GNSS / RTK 定位資訊 |
 | **EtherCAT**<br>*(Ethernet for Control Automation Technology)* | `Controller & Industrial Devices` | Ethernet <br> (Master / Slave) | 建立於 Ethernet 的工業乙太網路協定，著重即時控制通訊與高精度時間同步，具低延遲、高同步的優勢 | • 機器人本體內多軸馬達控制 |
-| **Modbus TCP** | `Controller & Industrial Devices` | TCP/IP <br> (Client / Server) | 建立於 Ethernet 的工業通訊協定，可讀寫裝置的暫存器資料 | • 機器人與工業設備資料交換 |
+| **Modbus TCP / RTU** | `Controller & Industrial Devices` | TCP：Ethernet / RTU：RS-485、RS-232 <br> (TCP：Client/Server / RTU：Master/Slave) | 工業設備常用的資料通訊協定，透過讀寫暫存器進行資料交換；TCP 版本適合乙太網路整合，RTU 版本則採串列通訊，具低成本、架構簡單等特性 | • 機器人與工業設備資料交換 |
 | **CANopen** | `Controller & Industrial Devices` | CAN Bus <br> (Producer / Consumer) | 建立於 CAN Bus 的高層通訊協定，沿用 CAN 的訊息仲裁、錯誤偵測、自動重傳等機制，加上標準化的物件字典（Object Dictionary）與通訊物件，實現裝置參數設定、即時資料交換與網路管理 | • 機器人本體內控制器與馬達驅動器通訊<br>• 廣泛應用於工業設備的即時通訊 |
 | **SOME/IP**<br>*(Scalable service-Oriented Middleware over IP)* | `Automotive Systems` | UDP / TCP over IP <br> (Service-Oriented / RPC) | 建立於 Ethernet 的車載服務導向通訊協定，以 Service 為中心進行通訊，並支援服務搜尋、遠端程序呼叫及事件通知 | • 採用車載電子架構<br>• 車用電子間通訊 |

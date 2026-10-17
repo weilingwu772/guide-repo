@@ -1,10 +1,10 @@
 # 感知工程規範 (ROS 2 engineering standards for sensor fusion)
 
-進一步探究機器人感知系統的開發流程，會發現實務上最令人頭痛的往往不是演算法本身，而是各個感測器介面與資料表示方式的不一致，不同感測器通常具有各自的原生介面（Native Interface），其實體介面、通訊協定、資料格式與操作流程，往往由硬體製造商依據自身產品路線而設計，為協助開發者存取與控制硬體，原廠通常也會提供相應的軟體支援，例如感測器的 SDK（Software Development Kit，軟體開發工具包）、工業電腦的 BSP（Board Support Package，板級支援套件）等，裡面包含原廠已處理的程式碼、函式庫、使用說明文件或範例檔，使開發者能夠取得感測器原始資料，或呼叫硬體所提供的特定功能。
+進一步探究機器人感知系統的開發流程，會發現實務上最令人頭痛的往往不是演算法本身，而是各個感測器介面與資料表示方式的不一致，不同感測器通常具有各自的原生介面（Native Interface），其硬體介面、通訊協定、資料格式與操作流程，往往由硬體製造商依據自身產品路線而設計，為協助開發者存取與控制硬體，原廠通常也會提供相應的軟體支援，例如感測器的 SDK（Software Development Kit，軟體開發工具包）、工業電腦的 BSP（Board Support Package，板級支援套件）等，裡面包含原廠已處理的程式碼、函式庫、使用說明文件或範例檔，使開發者能夠取得感測器原始資料，或呼叫硬體所提供的特定功能。
 
 然而，感測器資料在進入演算法之前，通常需要經過一系列封裝或轉換流程，其中，驅動程式（Driver）負責與硬體原生介面溝通，使上層軟體能夠存取與操作硬體，並取得感測器所產生的原始資料；介面轉接元件（Adapter）則進一步負責不同軟體介面或資料格式之間的轉換。就以 ROS 2 來說，Driver 或 Adapter 可將感測器資料封裝為 ROS 2 Message，也就是具有一致欄位定義、資料語意與單位規範的封包，以確保多個感測器與後續演算法能夠順暢對接，這種機制實踐了**硬體抽象化**（Hardware Abstraction）設計理念，其目的在於透過統一的軟體介面隔離硬體差異，進而降低後續進行多感測器融合（Sensor Fusion）時，因資料格式不一致所造成的系統不穩定問題。
 
-因此，為提升不同感測器之間的整合效率，會建議開發者在處理資料封裝與轉換時，可參考相關工程規範，例如 REP（ROS Enhancement Proposal）規範文件，或是參考其他產品針對 ROS 2 所提供的 Message 定義，都有助於建立一致且符合 ROS 2 軟體框架的資料格式，故本節將從「既有規範」與「常見實務」兩個面向，提供開發者無論是使用原廠提供或是自寫驅動程式的情況下，在設計程式架構時的參考，並以下圖說明感測器資料由原生介面轉換至 ROS 2 的流程，以及 REP 在其中所扮演的角色。
+因此，會建議開發者在處理資料封裝與轉換時，可參考相關工程規範，例如 REP（ROS Enhancement Proposal）規範文件，或是參考其他產品針對 ROS 2 所提供的 Message 定義，都有助於建立一致且符合 ROS 2 軟體框架的資料格式，故本節將從「既有規範」與「常見實務」兩個面向，提供開發者無論是使用原廠提供或是自寫驅動程式的情況下，在設計程式架構時的參考，並以下圖說明感測器資料由原生介面轉換至 ROS 2 的流程，以及 REP 在其中所扮演的角色。
 
 ```mermaid
 flowchart LR
@@ -153,7 +153,7 @@ flowchart LR
      - `l_gripper`、`r_gripper`：分別表示左、右側末端執行器（夾爪或靈巧手）的座標系。
      - `l_sole`、`r_sole`：分別表示左、右腳底支撐面的座標系，可用於步態控制、平衡及接觸地面的相關計算。
     
-    值得一提的是，REP-120 定義了 `base_footprint` 座標系，用於表示機器人在地面上的位置，概念上可將其理解為機器人本體在地面上的「投影」，並使相對於 `odom` 的 `Roll` 與 `Pitch` 維持為 0，`Yaw` 則與 `base_link` 一致；如此一來，即使機器人在行走時因地面顛波產生上下起伏或身體傾斜，仍可透過 `base_footprint` 提供較穩定的 2D 平面位置與朝向，使導航相關演算法能專注於機器人在地面上的移動，而不必直接處理本體的高度與傾斜變化，同時，此概念在實務上也常被應用在輪型 AMR 的系統設計中。
+    值得一提的是，REP-120 定義了 `base_footprint` 座標系，用於表示機器人在地面上的位置，概念上可將其理解為機器人本體在地面上的「投影」，並使相對於 `odom` 的 `Roll` 與 `Pitch` 維持為 0，`Yaw` 則與 `base_link` 一致；如此一來，即使機器人在行走時因地面顛波產生上下起伏或身體傾斜，仍可透過 `base_footprint` 提供較穩定的 2D 平面位置與朝向，使導航相關演算法能專注於機器人在地面上的移動，而不必直接處理本體的高度與傾斜變化，同時，此概念在實務上也常被應用在輪型機器人的系統設計中。
 
 ### 1.3. 感測資料標準化
 
@@ -161,7 +161,7 @@ flowchart LR
 
 * **REP-117 Informational Distance Measurements**（ [文件連結](https://www.ros.org/reps/rep-0117.html)）
 
-    REP-117 規範 ROS 與 PCL（Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫）中，物理距離（Physical Distance）測量值的表示方式，適用於各種距離感測資料，例如 `sensor_msgs/Range.msg`、`sensor_msgs/LaserScan.msg`、`sensor_msgs/PointCloud2.msg` 三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
+    REP-117 規範 ROS 與 PCL（Point Cloud Library，專門處理 3D 點雲資料的開源 C++ 函式庫）中，物理距離（Physical Distance）測量值的表示方式，適用於各種距離感測資料，例如`sensor_msgs/msg/Range.msg`、`sensor_msgs/msg/LaserScan.msg`、`sensor_msgs/msg/PointCloud2.msg`三種格式，並強調當感測器無法取得有效距離時，應使用特殊數值（`-Inf`、`+Inf`、`NaN`）來表示不同的測量狀態，避免不同廠商或驅動使用不同的表示方式，造成後續演算法誤判。
     
     舉例來說，傳統開發可能會使用自訂數值，來表示超出量測範圍或量測異常，這種資料語意的不一致，容易導致演算法解讀錯誤，進而造成機器人緊急煞車或路徑規劃出錯，故建議遵循 REP-117 以下形式：
     
@@ -173,13 +173,13 @@ flowchart LR
 
     REP-118 規範 ROS 中深度影像（Depth Image）的表示方式，包含輸出的資料格式、單位、Topic，使不同廠商或不同技術的深度相機（如 Stereo Camera、Structured Light、Time-of-Flight）都能輸出相同格式的深度影像，方便後續演算法直接使用。
     
-    舉例來說，感測器應使用`sensor_msgs/Image`來表示深度影像，而非`sensor_msgs/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配`camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
+    舉例來說，感測器應使用`sensor_msgs/msg/Image`來表示深度影像，而非`sensor_msgs/msg/DisparityImage`，其中每個像素沿相機 Z 軸的深度值應為 32-bit float（單位為公尺）格式，若使用 16-bit unsigned integer（單位為毫米）格式，則必須在說明文件中明確聲明並進行轉換，最後則是搭配`camera_info` Topic 進行發布，演算法對接後就能基於此建立三維點雲。
 
 * **REP-138 LaserScan Common Topics, Parameters, and Diagnostic Keys**（ [文件連結](https://www.ros.org/reps/rep-0138.html)）
 
-    REP-138 定義雷射掃描儀（Laser Scanner）驅動程式裡常用的 Topic、參數及診斷資訊（Diagnostic Keys）之命名建議，其中，前兩者的標準化有助於後續 ROS 2 套件與演算法直接使用；至於診斷資訊，則建議提供`Computed Latency`、`User Time Offset`、`Firmware Version`等項目資訊，利於開發者監測感測器運作狀態、確認驅動相容性及進行系統除錯。不過要特別注意，REP-138 是以光達掃描時所產生的掃描線（Scan Line）資料為基礎制定，因此主要適用於 2D 光達，至於以`sensor_msgs/PointCloud2`為主要輸出格式的 3D 光達，則可參考其命名與診斷資訊的設計原則，並非所有規範皆適用。
+    REP-138 定義雷射掃描儀（Laser Scanner）驅動程式裡常用的 Topic、參數及診斷資訊（Diagnostic Keys）之命名建議，其中，前兩者的標準化有助於後續 ROS 2 套件與演算法直接使用；至於診斷資訊，則建議提供`Computed Latency`、`User Time Offset`、`Firmware Version`等項目資訊，利於開發者監測感測器運作狀態、確認驅動相容性及進行系統除錯。不過要特別注意，REP-138 是以光達掃描時所產生的掃描線（Scan Line）資料為基礎制定，因此主要適用於 2D 光達，至於以`sensor_msgs/msg/PointCloud2`為主要輸出格式的 3D 光達，則可參考其命名與診斷資訊的設計原則，並非所有規範皆適用。
 
-    舉例來說，若是單回波（Single Echo）光達，意指每個掃描方向僅保留一筆量測結果，建議 Topic 為`scan`，並輸出`sensor_msgs/LaserScan`格式；若為多回波（Multi-Echo）光達，即同一個掃描方向可保留多筆回波資訊，則建議 Topic 為`echoes`，並輸出`sensor_msgs/MultiEchoLaserScan`格式。至於兩者對應的驅動程式之參數，皆建議採用以下命名方式：
+    舉例來說，若是單回波（Single Echo）光達，意指每個掃描方向僅保留一筆量測結果，建議 Topic 為`scan`，並輸出`sensor_msgs/msg/LaserScan`格式；若為多回波（Multi-Echo）光達，即同一個掃描方向可保留多筆回波資訊，則建議 Topic 為`echoes`，並輸出`sensor_msgs/msg/MultiEchoLaserScan`格式。至於兩者對應的驅動程式之參數，皆建議採用以下命名方式：
     
      - `ip_address`、`ip_port`、`serial_port`、`serial_baud`，用以設定乙太網路或序列埠通訊。
      - `frame_id`，用於標示每筆完整雷射掃描幀（Frame）所對應的座標框架名稱；依據 REP-138，該座標框架原點應設於光達的光學中心（Optical Center），其中 X 軸對應光達的 0° 掃描方向，Y 軸對應 90° 掃描方向。

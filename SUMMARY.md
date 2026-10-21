@@ -8,7 +8,6 @@
 * [CH 2-1. 資料傳輸機制 (How Data Transmission Works)](CH2-1_How_Data_Transmission_Works.md)
 * [CH 2-2. ROS 2 套件建立與執行（Building and Running a ROS 2 Package）](CH2-2_Building_and_Running_a_ROS_2_Package.md)
 * [CH 2-3. 座標與時間同步 (Getting Space and Time in Sync)](CH2-3_Getting_Space_and_Time_in_Sync.md)
-* [CH 3-1. 主流演算法 (What Algorithms Do Robots Use)](CH3-1_What_Algorithms_Do_Robots_Use.md)
-* [CH 3-2. 機器人基礎模型 (Foundation Models for Robotics)](CH3-2_Foundation_Models_for_Robotics.md)
+* [CH 3-1. 移動機器人導航演算法 (Navigation Algorithms for Mobile Robots)](CH3-1_Navigation_Algorithms_for_Mobile_Robots.md)
+* [CH 3-2. 人型機器人基礎模型 (Foundation Models for Humanoid Robots)](CH3-2_Foundation_Models_for_Humanoid_Robots.md)
 * [CH 3-3. 市場合規要求 (Market Compliance Requirements)](CH3-3_Market_Compliance_Requirements.md)
-

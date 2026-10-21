@@ -110,12 +110,12 @@ flowchart LR
     | 溫度（Temperature）       | celsius        |
     | 磁場（Magnetism）         | tesla          |
 
-  * **座標系**：採用右手座標系（Right-Handed Coordinate System）
+  * **座標系**：採用右手座標系
     - X 軸：Forward（指向機器人前方）
     - Y 軸：Left（指向機器人左方）
     - Z 軸：Up（垂直向上）
       
-  * **世界座標系**：採用 ENU（East-North-Up）座標系
+  * **世界座標系**：採用 East-North-Up 座標系
     - X 軸：East（東方）
     - Y 軸：North（北方）
     - Z 軸：Up（垂直向上）
@@ -126,7 +126,7 @@ flowchart LR
     - Z 軸：Forward（向前）
       
   * **旋轉表示方式**：逆時針方向為正
-    1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點(singularities) 。
+    1. Quaternion：最建議使用，用四個數值表示旋轉，表示方式相對緊湊且無奇異點（Singularities）。
     2. Rotation Matrix：無奇異點。
     3. Fixed-axis Roll-Pitch-Yaw：依序繞 X、Y、Z 軸的角速度。
     4. Euler Angles：最不建議使用，因其存在 24 種旋轉慣例，容易造成姿態解讀不一致。

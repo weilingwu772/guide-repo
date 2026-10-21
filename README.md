@@ -1,10 +1,8 @@
 # 通用化推進工作
 
-此為今年度規劃產出一本技術類指引的文本底稿儲存庫。
-預計名稱：
-**ROBOT READY**<br>
-Foundation · Integration · Trends<br>
-**基於 ROS 2 - 機器人系統通用入門指引** 
+此為今年度產出一本技術類指引的文本底稿儲存庫。
+名稱：**基於 ROS 2 - 機器人系統通用入門指引** 
+Foundation · Integration · Trends
 
 ---
 
@@ -12,16 +10,16 @@ Foundation · Integration · Trends<br>
 
 | 章節  | 目前版本 | 最新更新 | 進度狀態 |
 | --- | ---- | ---- | ---- |
-| [前言](CH0-0_Preface.md) | v1 | 8/7  | 待補齊 |
+| [前言](CH0-0_Preface.md) | v1 | 8/7  | 已完成 |
 | [CH 1-1. 解構機器人](CH1-1_The_Robot_Anatomy.md) | v2 | 7/26  | 已完成 |
 | [CH 1-2. 主流開發框架](CH1-2_Why_use_ROS_2_for_robot_development.md) | v2 | 7/26  | 已完成 |
-| [CH 1-3. 感知工程規範](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | v2 | 7/26  | 補產品 |
+| [CH 1-3. 感知工程規範](CH1-3_ROS_2_engineering_standards_for_sensor_fusion.md) | v2 | 7/26  | 已完成 |
 | [CH 2-1. 資料傳輸機制](CH2-1_How_Data_Transmission_Works.md) | v2 | 9/4 | 已完成 |
-| [CH 2-2. ROS 2 套件建立與執行](CH2-2_Building_and_Running_a_ROS_2_Package.md) | v1 | 9/4 | 待完成 |
+| [CH 2-2. ROS 2 套件建立與執行](CH2-2_Building_and_Running_a_ROS_2_Package.md) | v1 | 9/4 | 已完成 |
 | [CH 2-3. 座標與時間同步](CH2-3_Getting_Space_and_Time_in_Sync.md) | v2 | 9/4 | 已完成 |
-| [CH 3-1. 主流演算法](CH3-1_What_Algorithms_Do_Robots_Use.md) | v2 | 9/4 | 待 review |
-| [CH 3-2. 機器人基礎模型](CH3-2_Foundation_Models_for_Robotics.md) | v1 | 9/4 | 待 review |
-| [CH 3-3. 市場合規要求](CH3-3_Market_Compliance_Requirements.md) | v1 | 9/4 | 待 review |
+| [CH 3-1. 移動機器人導航演算法](CH3-1_Navigation_Algorithms_for_Mobile_Robots.md) | v2 | 10/22 | 已完成 |
+| [CH 3-2. 人型機器人基礎模型](CH3-2_Foundation_Models_for_Humanoid_Robots.md) | v2 | 10/22 | 已完成 |
+| [CH 3-3. 市場合規要求](CH3-3_Market_Compliance_Requirements.md) | v2 | 10/22 | 待完成 |
 
 ---
 
@@ -43,4 +41,4 @@ Foundation · Integration · Trends<br>
 - **提供畫面截圖**：將需要調整或有誤的畫面截圖，並標註您的建議後提供。
 
 ---
-*最後更新日期：2026-09-20*
+*最後更新日期：2026-10-22*
